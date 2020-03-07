@@ -1,3 +1,4 @@
+import abc
 import asyncio
 import base64
 import collections
@@ -19,57 +20,48 @@ from terraform.protos import tfplugin5_1_grpc, tfplugin5_1_pb2
 logger = logging.getLogger(__name__)
 
 
-class BaseResource:
-    name: str
-
-
-class Resource(BaseResource):
-    ...
-
-
-class DataSource(BaseResource):
-    ...
-
-
 class Resources(collections.abc.Mapping):
     def __init__(
-        self, resources: typing.Optional[typing.Sequence[BaseResource]] = None
+        self, resources: typing.Optional[typing.Sequence[schema.Resource]] = None
     ):
-        self.resources = [] if resources is None else list(resources)
+        self.resources = {}
+        if resources is not None:
+            for resource in resources:
+                self.add(resource)
 
-    def __getitem__(self, name):
-        for resource in self.resources:
-            if resource.name == name:
-                return resource
-        raise KeyError(name)
+    def __getitem__(self, name: str) -> schema.ResourceData:
+        return self.resources[name]
 
     def __iter__(self):
         return iter(self.resources)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.resources)
 
-    def add(self, resource: BaseResource):
-        self.resources.append(resource)
+    def add(self, resource: schema.Resource):
+        self.resources[resource.name] = resource
 
 
 class Provider(schema.Schema):
-    name: str
+    @property
+    @abc.abstractmethod
+    def name(self) -> str:
+        ...
 
     def __init__(
         self,
-        resources: typing.Optional[typing.Sequence[Resource]] = None,
-        data_sources: typing.Optional[typing.Sequence[DataSource]] = None,
+        resources: typing.Optional[typing.Sequence[schema.Resource]] = None,
+        data_sources: typing.Optional[typing.Sequence[schema.Resource]] = None,
     ):
         super().__init__()
 
         self.resources = Resources(resources)
         self.data_sources = Resources(data_sources)
 
-    def add_resource(self, resource: Resource):
+    def add_resource(self, resource: schema.Resource):
         self.resources.add(resource)
 
-    def add_data_source(self, data_source: DataSource):
+    def add_data_source(self, data_source: schema.Resource):
         self.data_sources.add(data_source)
 
 
@@ -79,8 +71,14 @@ class ProviderService(tfplugin5_1_grpc.ProviderBase):
 
         response = tfplugin5_1_pb2.GetProviderSchema.Response(
             provider=tfplugin5_1_pb2.Schema(block=self.provider.to_block().to_proto()),
-            resource_schemas={},
-            data_source_schemas={},
+            resource_schemas={
+                name: resource.to_proto()
+                for name, resource in self.provider.resources.items()
+            },
+            data_source_schemas={
+                name: resource.to_proto()
+                for name, resource in self.provider.data_sources.items()
+            },
         )
         await stream.send_message(response)
 

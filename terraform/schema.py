@@ -1,3 +1,4 @@
+import abc
 import dataclasses
 import enum
 import json
@@ -6,7 +7,7 @@ import typing
 
 import marshmallow
 
-from terraform import fields
+from terraform import fields, settings
 from terraform.protos import tfplugin5_1_pb2
 
 
@@ -110,10 +111,8 @@ class Map(marshmallow.fields.Mapping, BaseField):
         super().__init__(String(), values, **kwargs)
 
     def get_terraform_type(self) -> typing.Any:
-        from terraform import schema
-
         if isinstance(self.value_field, Nested) and isinstance(
-            self.value_field.nested, schema.Resource
+            self.value_field.nested, Resource
         ):
             value_field = String()
         else:
@@ -196,7 +195,11 @@ def encode_type(obj: typing.Any) -> bytes:
     return json.dumps(obj, separators=(",", ":")).encode("ascii")
 
 
-class Schema(marshmallow.Schema):
+class SchemaMeta(marshmallow.schema.SchemaMeta, abc.ABCMeta):
+    ...
+
+
+class Schema(marshmallow.Schema, metaclass=SchemaMeta):
     # TODO: subclass BaseField
 
     schema_version: typing.Optional[int] = None
@@ -209,6 +212,11 @@ class Schema(marshmallow.Schema):
                 for field in self.declared_fields.values()
             },
         ]
+
+    def to_proto(self) -> tfplugin5_1_pb2.Schema:
+        return tfplugin5_1_pb2.Schema(
+            version=self.schema_version, block=self.to_block().to_proto(),
+        )
 
     def to_block(self) -> Block:
         attributes = {}
@@ -268,5 +276,44 @@ class Schema(marshmallow.Schema):
         return Block(attributes=attributes, block_types=block_types)
 
 
+@dataclasses.dataclass
+class ResourceData(typing.MutableMapping):
+    def __init__(self):
+        self.data = {}
+
+    def __getitem__(self, key: str) -> typing.Any:
+        return self.data[key]
+
+    def __setitem__(self, key: str, value: typing.Any) -> None:
+        self.data[key] = value
+
+    def __delitem__(self, key: str) -> None:
+        del self.data[key]
+
+    def __len__(self) -> int:
+        return len(self.data)
+
+    def __iter__(self):
+        return iter(self.data)
+
+    def set_id(self, value: str) -> None:
+        self[settings.ID_KEY] = value
+
+
 class Resource(Schema):
-    ...
+    name: str
+
+    async def create(self, data: ResourceData):
+        ...
+
+    async def read(self, data: ResourceData):
+        ...
+
+    async def update(self, data: ResourceData):
+        ...
+
+    async def delete(self, data: ResourceData):
+        ...
+
+    async def exists(self, data: ResourceData):
+        ...
