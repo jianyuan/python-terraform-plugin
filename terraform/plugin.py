@@ -1,6 +1,5 @@
 import asyncio
 import base64
-import collections
 import contextlib
 import logging
 import os
@@ -19,16 +18,16 @@ from terraform.protos import tfplugin5_1_grpc, tfplugin5_1_pb2
 logger = logging.getLogger(__name__)
 
 
-class Resources(collections.abc.Mapping):
+class Resources(typing.Mapping[str, schema.Resource]):
     def __init__(
         self, resources: typing.Optional[typing.Sequence[schema.Resource]] = None
     ):
-        self.resources = {}
+        self.resources: typing.Dict[str, schema.Resource] = {}
         if resources is not None:
             for resource in resources:
                 self.add(resource)
 
-    def __getitem__(self, name: str) -> schema.ResourceData:
+    def __getitem__(self, name: str) -> schema.Resource:
         return self.resources[name]
 
     def __iter__(self):
@@ -105,7 +104,16 @@ class ProviderService(tfplugin5_1_grpc.ProviderBase):
         pass
 
     async def ValidateDataSourceConfig(self, stream: grpclib.server.Stream) -> None:
-        pass
+        request = await stream.recv_message()
+
+        resource = self.provider.data_sources[request.type_name]
+        config = utils.from_dynamic_value_proto(request.config)
+
+        # TODO: validate config and report back
+        resource.validate(config)
+
+        response = tfplugin5_1_pb2.ValidateDataSourceConfig.Response()
+        await stream.send_message(response)
 
     async def UpgradeResourceState(self, stream: grpclib.server.Stream) -> None:
         pass
