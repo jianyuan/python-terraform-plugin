@@ -42,6 +42,7 @@ class Resources(typing.Mapping[str, schema.Resource]):
 
 class Provider(schema.Schema):
     name: str
+    terraform_version: typing.Optional[str] = None
 
     def __init__(
         self,
@@ -52,12 +53,16 @@ class Provider(schema.Schema):
 
         self.resources = Resources(resources)
         self.data_sources = Resources(data_sources)
+        self.config = {}
 
     def add_resource(self, resource: schema.Resource):
         self.resources.add(resource)
 
     def add_data_source(self, data_source: schema.Resource):
         self.data_sources.add(data_source)
+
+    def configure(self, config: typing.Dict[str, typing.Any]):
+        self.config = config
 
 
 class ProviderService(tfplugin5_1_grpc.ProviderBase):
@@ -119,7 +124,14 @@ class ProviderService(tfplugin5_1_grpc.ProviderBase):
         pass
 
     async def Configure(self, stream: grpclib.server.Stream) -> None:
-        pass
+        request = await stream.recv_message()
+
+        config = utils.from_dynamic_value_proto(request.config)
+        self.provider.terraform_version = request.terraform_version or "0.11+compatible"
+        self.provider.configure(config)
+
+        response = tfplugin5_1_pb2.Configure.Response()
+        await stream.send_message(response)
 
     async def ReadResource(self, stream: grpclib.server.Stream) -> None:
         pass
