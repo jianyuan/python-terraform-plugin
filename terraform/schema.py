@@ -33,103 +33,6 @@ NESTING_MODE_PROTO_ENUMS = {
 }
 
 
-class BaseField(marshmallow.fields.Field):
-    terraform_type: typing.Optional[str] = None
-
-    def __init__(
-        self,
-        *,
-        description: typing.Optional[str] = None,
-        required: bool = False,
-        optional: bool = False,
-        computed: bool = False,
-        force_new: bool = False,
-        sensitive: bool = False,
-        **kwargs,
-    ):
-        # TODO: validate metadata
-        metadata = {
-            "description": description,
-            "required": required,
-            "optional": optional,
-            "computed": computed,
-            "force_new": force_new,
-            "sensitive": sensitive,
-        }
-        super().__init__(**kwargs, **metadata)
-
-    def get_terraform_type(self) -> typing.Any:
-        if self.terraform_type is not None:
-            return self.terraform_type
-        raise NotImplementedError
-
-
-class BaseNestedField(BaseField):
-    terraform_nesting = ...
-
-
-class Bool(marshmallow.fields.Boolean, BaseField):
-    terraform_type = "bool"
-
-
-class Int(marshmallow.fields.Integer, BaseField):
-    terraform_type = "number"
-
-
-class Float(marshmallow.fields.Float, BaseField):
-    terraform_type = "number"
-
-
-class String(marshmallow.fields.String, BaseField):
-    terraform_type = "string"
-
-
-class List(marshmallow.fields.List, BaseField):
-    def __init__(
-        self,
-        cls_or_instance: typing.Union[BaseField, type],
-        *,
-        min_items: int = 0,
-        max_items: int = 0,
-        **kwargs,
-    ):
-        # TODO: validate metadata
-        metadata = {
-            "min_items": min_items,
-            "max_items": max_items,
-        }
-        super().__init__(cls_or_instance=cls_or_instance, **kwargs, **metadata)
-
-    def get_terraform_type(self) -> typing.Any:
-        return ["list", self.inner.get_terraform_type()]
-
-
-class Map(marshmallow.fields.Mapping, BaseField):
-    def __init__(self, values=None, **kwargs):
-        if values is None:
-            values = String()
-        super().__init__(String(), values, **kwargs)
-
-    def get_terraform_type(self) -> typing.Any:
-        if isinstance(self.value_field, Nested) and isinstance(
-            self.value_field.nested, Resource
-        ):
-            value_field = String()
-        else:
-            value_field = self.value_field
-
-        return ["map", value_field.get_terraform_type()]
-
-
-class Set(marshmallow.fields.List, BaseField):
-    def get_terraform_type(self) -> typing.Any:
-        return ["set", self.inner.get_terraform_type()]
-
-
-class Nested(marshmallow.fields.Nested, BaseField):
-    ...
-
-
 @dataclasses.dataclass
 class Attribute:
     type: typing.Any
@@ -212,6 +115,10 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
                 for field in self.declared_fields.values()
             },
         ]
+
+    @marshmallow.pre_dump
+    def none_missing(self, data, **kwargs):
+        return {key: value for key, value in data.items() if value is not None}
 
     def to_proto(self) -> tfplugin5_1_pb2.Schema:
         return tfplugin5_1_pb2.Schema(

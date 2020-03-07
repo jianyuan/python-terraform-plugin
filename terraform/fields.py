@@ -15,6 +15,8 @@ class BaseField(marshmallow.fields.Field):
         computed: bool = False,
         force_new: bool = False,
         sensitive: bool = False,
+        removed: typing.Optional[str] = None,
+        deprecated: typing.Optional[str] = None,
         **kwargs,
     ):
         # TODO: validate metadata
@@ -25,13 +27,24 @@ class BaseField(marshmallow.fields.Field):
             "computed": computed,
             "force_new": force_new,
             "sensitive": sensitive,
+            "removed": removed,
+            "deprecated": deprecated,
         }
+        kwargs.setdefault("allow_none", True)
         super().__init__(**kwargs, **metadata)
 
     def get_terraform_type(self) -> typing.Any:
         if self.terraform_type is not None:
             return self.terraform_type
         raise NotImplementedError
+
+    def serialize(self, *args, **kwargs):
+        if (
+            self.metadata["removed"] is not None
+            or self.metadata["deprecated"] is not None
+        ):
+            return None
+        return super().serialize(*args, **kwargs)
 
 
 class BaseNestedField(BaseField):

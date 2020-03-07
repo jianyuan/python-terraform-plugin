@@ -1,4 +1,3 @@
-import abc
 import asyncio
 import base64
 import collections
@@ -43,10 +42,7 @@ class Resources(collections.abc.Mapping):
 
 
 class Provider(schema.Schema):
-    @property
-    @abc.abstractmethod
-    def name(self) -> str:
-        ...
+    name: str
 
     def __init__(
         self,
@@ -66,6 +62,15 @@ class Provider(schema.Schema):
 
 
 class ProviderService(tfplugin5_1_grpc.ProviderBase):
+    def __init__(
+        self,
+        *,
+        provider: Provider,
+        shutdown_event: typing.Optional[asyncio.Event] = None,
+    ):
+        self.provider = provider
+        self.shutdown_event = shutdown_event
+
     async def GetSchema(self, stream: grpclib.server.Stream) -> None:
         await stream.recv_message()
 
@@ -83,7 +88,18 @@ class ProviderService(tfplugin5_1_grpc.ProviderBase):
         await stream.send_message(response)
 
     async def PrepareProviderConfig(self, stream: grpclib.server.Stream) -> None:
-        pass
+        request = await stream.recv_message()
+
+        config = utils.from_dynamic_value_proto(request.config)
+
+        prepared_config = self.provider.dump(config)
+
+        # TODO: diagnostics
+
+        response = tfplugin5_1_pb2.PrepareProviderConfig.Response(
+            prepared_config=utils.to_dynamic_value_proto(prepared_config),
+        )
+        await stream.send_message(response)
 
     async def ValidateResourceTypeConfig(self, stream: grpclib.server.Stream) -> None:
         pass
@@ -114,10 +130,6 @@ class ProviderService(tfplugin5_1_grpc.ProviderBase):
 
     async def Stop(self, stream: grpclib.server.Stream) -> None:
         pass
-
-    def __init__(self, *, provider: Provider, shutdown_event: asyncio.Event):
-        self.provider = provider
-        self.shutdown_event = shutdown_event
 
 
 async def write_handshake_response(

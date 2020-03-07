@@ -1,10 +1,13 @@
 import datetime
 import typing
 
+import msgpack
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import ec
+
+from terraform.protos import tfplugin5_1_pb2
 
 
 class CertificatePrivateKey(typing.NamedTuple):
@@ -82,3 +85,11 @@ def encode_private_key(key: ec.EllipticCurvePrivateKeyWithSerialization) -> byte
         format=serialization.PrivateFormat.TraditionalOpenSSL,
         encryption_algorithm=serialization.NoEncryption(),
     )
+
+
+def to_dynamic_value_proto(value: typing.Any) -> tfplugin5_1_pb2.DynamicValue:
+    return tfplugin5_1_pb2.DynamicValue(msgpack=msgpack.packb(value))
+
+
+def from_dynamic_value_proto(proto: tfplugin5_1_pb2.DynamicValue) -> typing.Any:
+    return msgpack.unpackb(proto.msgpack)
