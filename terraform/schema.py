@@ -1,19 +1,35 @@
 import dataclasses
 import enum
 import json
+import operator
 import typing
 
 import marshmallow
 
 from terraform import fields
+from terraform.protos import tfplugin5_1_pb2
 
 
 class NestingMode(enum.IntEnum):
+    INVALID = enum.auto()
     SINGLE = enum.auto()
     GROUP = enum.auto()
     LIST = enum.auto()
     SET = enum.auto()
     MAP = enum.auto()
+
+    def to_proto(self) -> tfplugin5_1_pb2.Schema.NestedBlock.NestingMode:
+        return NESTING_MODE_PROTO_ENUMS[self]
+
+
+NESTING_MODE_PROTO_ENUMS = {
+    NestingMode.INVALID: tfplugin5_1_pb2.Schema.NestedBlock.NestingMode.INVALID,
+    NestingMode.SINGLE: tfplugin5_1_pb2.Schema.NestedBlock.NestingMode.SINGLE,
+    NestingMode.GROUP: tfplugin5_1_pb2.Schema.NestedBlock.NestingMode.GROUP,
+    NestingMode.LIST: tfplugin5_1_pb2.Schema.NestedBlock.NestingMode.LIST,
+    NestingMode.SET: tfplugin5_1_pb2.Schema.NestedBlock.NestingMode.SET,
+    NestingMode.MAP: tfplugin5_1_pb2.Schema.NestedBlock.NestingMode.MAP,
+}
 
 
 class BaseField(marshmallow.fields.Field):
@@ -117,12 +133,23 @@ class Nested(marshmallow.fields.Nested, BaseField):
 
 @dataclasses.dataclass
 class Attribute:
-    type: bytes
+    type: typing.Any
     description: typing.Optional[str] = None
     required: bool = False
     optional: bool = False
     computed: bool = False
     sensitive: bool = False
+
+    def to_proto(self, *, name: str) -> tfplugin5_1_pb2.Schema.Attribute:
+        return tfplugin5_1_pb2.Schema.Attribute(
+            name=name,
+            type=encode_type(self.type),
+            description=self.description,
+            required=self.required,
+            optional=self.optional,
+            computed=self.computed,
+            sensitive=self.sensitive,
+        )
 
 
 @dataclasses.dataclass
@@ -132,13 +159,37 @@ class Block:
         default_factory=dict
     )
 
+    def to_proto(self) -> tfplugin5_1_pb2.Schema.Block:
+        block = tfplugin5_1_pb2.Schema.Block()
+
+        for name, attribute in sorted(
+            self.attributes.items(), key=operator.itemgetter(0)
+        ):
+            block.attributes.append(attribute.to_proto(name=name))
+
+        for name, block_type in sorted(
+            self.block_types.items(), key=operator.itemgetter(0)
+        ):
+            block.block_types.append(block_type.to_proto(name=name))
+
+        return block
+
 
 @dataclasses.dataclass
 class NestedBlock:
-    block: Block
     nesting: NestingMode
+    block: Block = dataclasses.field(default_factory=Block)
     min_items: int = 0
     max_items: int = 0
+
+    def to_proto(self, *, name: str) -> tfplugin5_1_pb2.Schema.NestedBlock:
+        return tfplugin5_1_pb2.Schema.NestedBlock(
+            type_name=name,
+            block=self.block.to_proto(),
+            nesting=self.nesting.to_proto(),
+            min_items=self.min_items,
+            max_items=self.max_items,
+        )
 
 
 def encode_type(obj: typing.Any) -> bytes:
@@ -205,7 +256,7 @@ class Schema(marshmallow.Schema):
 
             else:
                 attributes[field.name] = Attribute(
-                    type=encode_type(field.get_terraform_type()),
+                    type=field.get_terraform_type(),
                     description=field.metadata["description"],
                     required=field.required,
                     optional=field.metadata["optional"],

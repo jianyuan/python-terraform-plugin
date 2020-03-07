@@ -78,7 +78,7 @@ class ProviderService(tfplugin5_1_grpc.ProviderBase):
         await stream.recv_message()
 
         response = tfplugin5_1_pb2.GetProviderSchema.Response(
-            provider=tfplugin5_1_pb2.Schema(block=...,),
+            provider=tfplugin5_1_pb2.Schema(block=self.provider.to_block().to_proto()),
             resource_schemas={},
             data_source_schemas={},
         )

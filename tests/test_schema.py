@@ -1,6 +1,7 @@
 import pytest
 
 from terraform import fields, schema
+from terraform.protos import tfplugin5_1_pb2
 
 
 class EmptySchema(schema.Schema):
@@ -95,18 +96,12 @@ class SensitiveSchema(schema.Schema):
             schema.Block(
                 attributes={
                     "int": schema.Attribute(
-                        type=schema.encode_type("number"),
-                        required=True,
-                        description="foo bar baz",
+                        type="number", required=True, description="foo bar baz",
                     ),
-                    "float": schema.Attribute(
-                        type=schema.encode_type("number"), optional=True,
-                    ),
-                    "bool": schema.Attribute(
-                        type=schema.encode_type("bool"), computed=True,
-                    ),
+                    "float": schema.Attribute(type="number", optional=True,),
+                    "bool": schema.Attribute(type="bool", computed=True,),
                     "string": schema.Attribute(
-                        type=schema.encode_type("string"), optional=True, computed=True,
+                        type="string", optional=True, computed=True,
                     ),
                 },
             ),
@@ -115,17 +110,11 @@ class SensitiveSchema(schema.Schema):
             SimpleCollectionsSchema(),
             schema.Block(
                 attributes={
-                    "list": schema.Attribute(
-                        type=schema.encode_type(["list", "number"]), required=True,
-                    ),
-                    "set": schema.Attribute(
-                        type=schema.encode_type(["set", "string"]), optional=True,
-                    ),
-                    "map": schema.Attribute(
-                        type=schema.encode_type(["map", "bool"]), optional=True,
-                    ),
+                    "list": schema.Attribute(type=["list", "number"], required=True,),
+                    "set": schema.Attribute(type=["set", "string"], optional=True,),
+                    "map": schema.Attribute(type=["map", "bool"], optional=True,),
                     "map_default_type": schema.Attribute(
-                        type=schema.encode_type(["map", "string"]), optional=True,
+                        type=["map", "string"], optional=True,
                     ),
                 },
             ),
@@ -134,15 +123,9 @@ class SensitiveSchema(schema.Schema):
             IncorrectCollectionsSchema(),
             schema.Block(
                 attributes={
-                    "list": schema.Attribute(
-                        type=schema.encode_type(["list", "number"]), required=True,
-                    ),
-                    "set": schema.Attribute(
-                        type=schema.encode_type(["set", "string"]), optional=True,
-                    ),
-                    "map": schema.Attribute(
-                        type=schema.encode_type(["map", "bool"]), optional=True,
-                    ),
+                    "list": schema.Attribute(type=["list", "number"], required=True,),
+                    "set": schema.Attribute(type=["set", "string"], optional=True,),
+                    "map": schema.Attribute(type=["map", "bool"], optional=True,),
                 }
             ),
         ),
@@ -150,9 +133,7 @@ class SensitiveSchema(schema.Schema):
             SubresourceCollectionsSchema(),
             schema.Block(
                 attributes={
-                    "map": schema.Attribute(
-                        type=schema.encode_type(["map", "string"]), optional=True,
-                    ),
+                    "map": schema.Attribute(type=["map", "string"], optional=True,),
                 },
                 block_types={
                     "list": schema.NestedBlock(
@@ -193,11 +174,10 @@ class SensitiveSchema(schema.Schema):
             schema.Block(
                 attributes={
                     "list": schema.Attribute(
-                        type=schema.encode_type(["list", ["object", {}]]),
-                        computed=True,
+                        type=["list", ["object", {}]], computed=True,
                     ),
                     "set": schema.Attribute(
-                        type=schema.encode_type(["set", ["object", {}]]), computed=True,
+                        type=["set", ["object", {}]], computed=True,
                     ),
                 }
             ),
@@ -211,10 +191,7 @@ class SensitiveSchema(schema.Schema):
                         block=schema.Block(
                             attributes={
                                 "bar": schema.Attribute(
-                                    type=schema.encode_type(
-                                        ["list", ["list", "string"]]
-                                    ),
-                                    required=True,
+                                    type=["list", ["list", "string"]], required=True,
                                 )
                             },
                             block_types={
@@ -234,7 +211,7 @@ class SensitiveSchema(schema.Schema):
             schema.Block(
                 attributes={
                     "string": schema.Attribute(
-                        type=schema.encode_type("string"), optional=True, sensitive=True
+                        type="string", optional=True, sensitive=True
                     )
                 }
             ),
@@ -244,7 +221,7 @@ class SensitiveSchema(schema.Schema):
         #     schema.Block(
         #         attributes={
         #             "string": schema.Attribute(
-        #                 type=schema.encode_type("string"), required=True
+        #                 type="string", required=True
         #             )
         #         }
         #     ),
@@ -254,7 +231,7 @@ class SensitiveSchema(schema.Schema):
         #     schema.Block(
         #         attributes={
         #             "string": schema.Attribute(
-        #                 type=schema.encode_type("string"), optional=True
+        #                 type="string", optional=True
         #             )
         #         }
         #     ),
@@ -264,7 +241,7 @@ class SensitiveSchema(schema.Schema):
         #     schema.Block(
         #         attributes={
         #             "string": schema.Attribute(
-        #                 type=schema.encode_type("string"), optional=True
+        #                 type="string", optional=True
         #             )
         #         }
         #     ),
@@ -274,3 +251,142 @@ class SensitiveSchema(schema.Schema):
 )
 def test_schema(subject: schema.Schema, want: schema.Block):
     assert subject.to_block() == want
+
+
+@pytest.mark.parametrize(
+    "subject,want",
+    [
+        pytest.param(
+            schema.Block(
+                attributes={
+                    "computed": schema.Attribute(type=["list", "bool"], computed=True),
+                    "optional": schema.Attribute(type="string", optional=True),
+                    "optional_computed": schema.Attribute(
+                        type=["map", "bool"], optional=True, computed=True,
+                    ),
+                    "required": schema.Attribute(type="number", required=True),
+                }
+            ),
+            tfplugin5_1_pb2.Schema.Block(
+                attributes=[
+                    tfplugin5_1_pb2.Schema.Attribute(
+                        name="computed", type=b'["list","bool"]', computed=True,
+                    ),
+                    tfplugin5_1_pb2.Schema.Attribute(
+                        name="optional", type=b'"string"', optional=True,
+                    ),
+                    tfplugin5_1_pb2.Schema.Attribute(
+                        name="optional_computed",
+                        type=b'["map","bool"]',
+                        optional=True,
+                        computed=True,
+                    ),
+                    tfplugin5_1_pb2.Schema.Attribute(
+                        name="required", type=b'"number"', required=True,
+                    ),
+                ]
+            ),
+            id="attributes",
+        ),
+        pytest.param(
+            schema.Block(
+                block_types={
+                    "list": schema.NestedBlock(nesting=schema.NestingMode.LIST),
+                    "map": schema.NestedBlock(nesting=schema.NestingMode.MAP),
+                    "set": schema.NestedBlock(nesting=schema.NestingMode.SET),
+                    "single": schema.NestedBlock(
+                        nesting=schema.NestingMode.SINGLE,
+                        block=schema.Block(
+                            attributes={
+                                "foo": schema.Attribute(type="dynamic", required=True)
+                            }
+                        ),
+                    ),
+                }
+            ),
+            tfplugin5_1_pb2.Schema.Block(
+                block_types=[
+                    tfplugin5_1_pb2.Schema.NestedBlock(
+                        type_name="list",
+                        nesting=tfplugin5_1_pb2.Schema.NestedBlock.LIST,
+                        block=tfplugin5_1_pb2.Schema.Block(),
+                    ),
+                    tfplugin5_1_pb2.Schema.NestedBlock(
+                        type_name="map",
+                        nesting=tfplugin5_1_pb2.Schema.NestedBlock.MAP,
+                        block=tfplugin5_1_pb2.Schema.Block(),
+                    ),
+                    tfplugin5_1_pb2.Schema.NestedBlock(
+                        type_name="set",
+                        nesting=tfplugin5_1_pb2.Schema.NestedBlock.SET,
+                        block=tfplugin5_1_pb2.Schema.Block(),
+                    ),
+                    tfplugin5_1_pb2.Schema.NestedBlock(
+                        type_name="single",
+                        nesting=tfplugin5_1_pb2.Schema.NestedBlock.SINGLE,
+                        block=tfplugin5_1_pb2.Schema.Block(
+                            attributes=[
+                                tfplugin5_1_pb2.Schema.Attribute(
+                                    name="foo", type=b'"dynamic"', required=True,
+                                )
+                            ]
+                        ),
+                    ),
+                ]
+            ),
+            id="blocks",
+        ),
+        pytest.param(
+            schema.Block(
+                block_types={
+                    "single": schema.NestedBlock(
+                        nesting=schema.NestingMode.SINGLE,
+                        block=schema.Block(
+                            block_types={
+                                "list": schema.NestedBlock(
+                                    nesting=schema.NestingMode.LIST,
+                                    block=schema.Block(
+                                        block_types={
+                                            "set": schema.NestedBlock(
+                                                nesting=schema.NestingMode.SET,
+                                            )
+                                        }
+                                    ),
+                                )
+                            }
+                        ),
+                    ),
+                }
+            ),
+            tfplugin5_1_pb2.Schema.Block(
+                block_types=[
+                    tfplugin5_1_pb2.Schema.NestedBlock(
+                        type_name="single",
+                        nesting=tfplugin5_1_pb2.Schema.NestedBlock.SINGLE,
+                        block=tfplugin5_1_pb2.Schema.Block(
+                            block_types=[
+                                tfplugin5_1_pb2.Schema.NestedBlock(
+                                    type_name="list",
+                                    nesting=tfplugin5_1_pb2.Schema.NestedBlock.LIST,
+                                    block=tfplugin5_1_pb2.Schema.Block(
+                                        block_types=[
+                                            tfplugin5_1_pb2.Schema.NestedBlock(
+                                                type_name="set",
+                                                nesting=tfplugin5_1_pb2.Schema.NestedBlock.SET,
+                                                block=tfplugin5_1_pb2.Schema.Block(),
+                                            )
+                                        ]
+                                    ),
+                                )
+                            ]
+                        ),
+                    ),
+                ]
+            ),
+            id="deep block nesting",
+        ),
+    ],
+    ids=lambda arg: arg.__class__.__name__,
+)
+def test_block_to_proto(subject: schema.Block, want: tfplugin5_1_pb2.Schema.Block):
+    assert subject.to_proto() == want
