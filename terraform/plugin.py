@@ -12,8 +12,9 @@ import typing
 import grpclib.server
 from grpclib.utils import graceful_exit
 
-from terraform import settings, utils
+from terraform import schema, settings, utils
 from terraform.grpc_controller import GRPCController
+from terraform.protos import tfplugin5_1_grpc, tfplugin5_1_pb2
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +53,7 @@ class Resources(collections.abc.Mapping):
         self.resources.append(resource)
 
 
-class Provider:
+class Provider(schema.Schema):
     name: str
 
     def __init__(
@@ -60,6 +61,8 @@ class Provider:
         resources: typing.Optional[typing.Sequence[Resource]] = None,
         data_sources: typing.Optional[typing.Sequence[DataSource]] = None,
     ):
+        super().__init__()
+
         self.resources = Resources(resources)
         self.data_sources = Resources(data_sources)
 
@@ -68,6 +71,55 @@ class Provider:
 
     def add_data_source(self, data_source: DataSource):
         self.data_sources.add(data_source)
+
+
+class ProviderService(tfplugin5_1_grpc.ProviderBase):
+    async def GetSchema(self, stream: grpclib.server.Stream) -> None:
+        await stream.recv_message()
+
+        response = tfplugin5_1_pb2.GetProviderSchema.Response(
+            provider=tfplugin5_1_pb2.Schema(block=...,),
+            resource_schemas={},
+            data_source_schemas={},
+        )
+        await stream.send_message(response)
+
+    async def PrepareProviderConfig(self, stream: grpclib.server.Stream) -> None:
+        pass
+
+    async def ValidateResourceTypeConfig(self, stream: grpclib.server.Stream) -> None:
+        pass
+
+    async def ValidateDataSourceConfig(self, stream: grpclib.server.Stream) -> None:
+        pass
+
+    async def UpgradeResourceState(self, stream: grpclib.server.Stream) -> None:
+        pass
+
+    async def Configure(self, stream: grpclib.server.Stream) -> None:
+        pass
+
+    async def ReadResource(self, stream: grpclib.server.Stream) -> None:
+        pass
+
+    async def PlanResourceChange(self, stream: grpclib.server.Stream) -> None:
+        pass
+
+    async def ApplyResourceChange(self, stream: grpclib.server.Stream) -> None:
+        pass
+
+    async def ImportResourceState(self, stream: grpclib.server.Stream) -> None:
+        pass
+
+    async def ReadDataSource(self, stream: grpclib.server.Stream) -> None:
+        pass
+
+    async def Stop(self, stream: grpclib.server.Stream) -> None:
+        pass
+
+    def __init__(self, *, provider: Provider, shutdown_event: asyncio.Event):
+        self.provider = provider
+        self.shutdown_event = shutdown_event
 
 
 async def write_handshake_response(
@@ -140,6 +192,7 @@ async def run_server(*, provider: Provider):
 
         handlers = [
             GRPCController(shutdown_event=shutdown_event),
+            ProviderService(provider=provider, shutdown_event=shutdown_event),
         ]
         server = grpclib.server.Server(handlers)
         with graceful_exit([server]):
