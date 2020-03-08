@@ -170,11 +170,26 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
                 )
 
             else:
+                required = field.required
+                optional = field.metadata["optional"]
+
+                # NOTE: See Schema.coreConfigSchemaAttribute for explanation
+                if field.required and callable(field.default):
+                    try:
+                        value = field.default()
+                    except Exception:
+                        required = False
+                        optional = True
+                    else:
+                        if value is not None:
+                            required = False
+                            optional = True
+
                 attributes[field.name] = Attribute(
                     type=field.get_terraform_type(),
                     description=field.metadata["description"],
-                    required=field.required,
-                    optional=field.metadata["optional"],
+                    required=required,
+                    optional=optional,
                     computed=field.metadata["computed"],
                     sensitive=field.metadata["sensitive"],
                 )

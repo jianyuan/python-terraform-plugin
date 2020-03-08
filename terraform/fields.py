@@ -87,10 +87,10 @@ class Map(marshmallow.fields.Mapping, BaseNestedField):
         super().__init__(String(), values, **kwargs)
 
     def get_terraform_type(self) -> typing.Any:
-        from terraform import schema
+        from terraform import schemas
 
         if isinstance(self.value_field, Nested) and isinstance(
-            self.value_field.nested, schema.Resource
+            self.value_field.nested, schemas.Resource
         ):
             value_field = String()
         else:

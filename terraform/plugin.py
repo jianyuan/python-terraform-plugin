@@ -11,23 +11,23 @@ import typing
 import grpclib.server
 from grpclib.utils import graceful_exit
 
-from terraform import schema, settings, utils
+from terraform import schemas, settings, utils
 from terraform.grpc_controller import GRPCController
 from terraform.protos import tfplugin5_1_grpc, tfplugin5_1_pb2
 
 logger = logging.getLogger(__name__)
 
 
-class Resources(typing.Mapping[str, schema.Resource]):
+class Resources(typing.Mapping[str, schemas.Resource]):
     def __init__(
-        self, resources: typing.Optional[typing.Sequence[schema.Resource]] = None
+        self, resources: typing.Optional[typing.Sequence[schemas.Resource]] = None
     ):
-        self.resources: typing.Dict[str, schema.Resource] = {}
+        self.resources: typing.Dict[str, schemas.Resource] = {}
         if resources is not None:
             for resource in resources:
                 self.add(resource)
 
-    def __getitem__(self, name: str) -> schema.Resource:
+    def __getitem__(self, name: str) -> schemas.Resource:
         return self.resources[name]
 
     def __iter__(self):
@@ -36,18 +36,18 @@ class Resources(typing.Mapping[str, schema.Resource]):
     def __len__(self) -> int:
         return len(self.resources)
 
-    def add(self, resource: schema.Resource):
+    def add(self, resource: schemas.Resource):
         self.resources[resource.name] = resource
 
 
-class Provider(schema.Schema):
+class Provider(schemas.Schema):
     name: str
     terraform_version: typing.Optional[str] = None
 
     def __init__(
         self,
-        resources: typing.Optional[typing.Sequence[schema.Resource]] = None,
-        data_sources: typing.Optional[typing.Sequence[schema.Resource]] = None,
+        resources: typing.Optional[typing.Sequence[schemas.Resource]] = None,
+        data_sources: typing.Optional[typing.Sequence[schemas.Resource]] = None,
     ):
         super().__init__()
 
@@ -55,10 +55,10 @@ class Provider(schema.Schema):
         self.data_sources = Resources(data_sources)
         self.config = {}
 
-    def add_resource(self, resource: schema.Resource):
+    def add_resource(self, resource: schemas.Resource):
         self.resources.add(resource)
 
-    def add_data_source(self, data_source: schema.Resource):
+    def add_data_source(self, data_source: schemas.Resource):
         self.data_sources.add(data_source)
 
     def configure(self, config: typing.Dict[str, typing.Any]):
