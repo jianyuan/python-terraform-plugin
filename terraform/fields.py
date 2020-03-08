@@ -9,6 +9,8 @@ class BaseField(marshmallow.fields.Field):
     def __init__(
         self,
         *,
+        default: typing.Any = None,
+        allow_none: bool = True,
         description: typing.Optional[str] = None,
         required: bool = False,
         optional: bool = False,
@@ -30,8 +32,7 @@ class BaseField(marshmallow.fields.Field):
             "removed": removed,
             "deprecated": deprecated,
         }
-        kwargs.setdefault("allow_none", True)
-        super().__init__(**kwargs, **metadata)
+        super().__init__(default=default, allow_none=allow_none, **kwargs, **metadata)
 
     def get_terraform_type(self) -> typing.Any:
         if self.terraform_type is not None:
