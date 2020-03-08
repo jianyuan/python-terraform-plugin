@@ -146,7 +146,22 @@ class ProviderService(tfplugin5_1_grpc.ProviderBase):
         pass
 
     async def ReadDataSource(self, stream: grpclib.server.Stream) -> None:
-        pass
+        request = await stream.recv_message()
+
+        resource = self.provider.data_sources[request.type_name]
+        config = utils.from_dynamic_value_proto(request.config)
+        data = schemas.ResourceData(config)
+
+        await resource.read(data=data)
+
+        if not data.get("id"):
+            data.set_id("-")
+
+        data = resource.dump(data)
+        response = tfplugin5_1_pb2.ReadDataSource.Response(
+            state=utils.to_dynamic_value_proto(dict(data))
+        )
+        await stream.send_message(response)
 
     async def Stop(self, stream: grpclib.server.Stream) -> None:
         pass

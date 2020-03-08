@@ -107,6 +107,11 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
 
     schema_version: typing.Optional[int] = None
 
+    def get_attribute(self, obj: typing.Any, attr: str, default: typing.Any):
+        if default == marshmallow.missing:
+            default = None
+        return super().get_attribute(obj, attr, default)
+
     def get_terraform_type(self) -> typing.Any:
         return [
             "object",
@@ -200,8 +205,7 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
 
 @dataclasses.dataclass
 class ResourceData(typing.MutableMapping):
-    def __init__(self):
-        self.data = {}
+    data: typing.Dict[str, typing.Any] = dataclasses.field(default_factory=dict)
 
     def __getitem__(self, key: str) -> typing.Any:
         return self.data[key]
@@ -224,6 +228,7 @@ class ResourceData(typing.MutableMapping):
 
 class Resource(Schema):
     name: str
+    id = fields.String(optional=True, computed=True)
 
     async def create(self, data: ResourceData):
         ...
