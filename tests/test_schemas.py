@@ -27,6 +27,9 @@ class ConditionallyRequiredErrorSchema(schemas.Schema):
     )
 
 
+ID_ATTRIBUTE = schemas.Attribute(type="string", optional=True, computed=True)
+
+
 @pytest.mark.parametrize(
     "subject,want",
     [
@@ -114,13 +117,13 @@ class ConditionallyRequiredErrorSchema(schemas.Schema):
                 block_types={
                     "list": schemas.NestedBlock(
                         nesting=schemas.NestingMode.LIST,
-                        block=schemas.Block(),
+                        block=schemas.Block(attributes={"id": ID_ATTRIBUTE}),
                         min_items=1,
                         max_items=2,
                     ),
                     "set": schemas.NestedBlock(
                         nesting=schemas.NestingMode.SET,
-                        block=schemas.Block(),
+                        block=schemas.Block(attributes={"id": ID_ATTRIBUTE}),
                         min_items=1,
                     ),
                 },
@@ -148,13 +151,13 @@ class ConditionallyRequiredErrorSchema(schemas.Schema):
                 block_types={
                     "list": schemas.NestedBlock(
                         nesting=schemas.NestingMode.LIST,
-                        block=schemas.Block(),
+                        block=schemas.Block(attributes={"id": ID_ATTRIBUTE}),
                         min_items=0,
                         max_items=1,
                     ),
                     "set": schemas.NestedBlock(
                         nesting=schemas.NestingMode.SET,
-                        block=schemas.Block(),
+                        block=schemas.Block(attributes={"id": ID_ATTRIBUTE}),
                         min_items=0,
                         max_items=1,
                     ),
@@ -182,10 +185,10 @@ class ConditionallyRequiredErrorSchema(schemas.Schema):
             schemas.Block(
                 attributes={
                     "list": schemas.Attribute(
-                        type=["list", ["object", {}]], computed=True,
+                        type=["list", ["object", {"id": "string"}]], computed=True,
                     ),
                     "set": schemas.Attribute(
-                        type=["set", ["object", {}]], computed=True,
+                        type=["set", ["object", {"id": "string"}]], computed=True,
                     ),
                 }
             ),
@@ -199,14 +202,17 @@ class ConditionallyRequiredErrorSchema(schemas.Schema):
                         nesting=schemas.NestingMode.LIST,
                         block=schemas.Block(
                             attributes={
+                                "id": ID_ATTRIBUTE,
                                 "bar": schemas.Attribute(
                                     type=["list", ["list", "string"]], required=True,
-                                )
+                                ),
                             },
                             block_types={
                                 "baz": schemas.NestedBlock(
                                     nesting=schemas.NestingMode.SET,
-                                    block=schemas.Block(),
+                                    block=schemas.Block(
+                                        attributes={"id": ID_ATTRIBUTE}
+                                    ),
                                 )
                             },
                         ),

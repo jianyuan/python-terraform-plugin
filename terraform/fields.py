@@ -99,7 +99,7 @@ class Map(marshmallow.fields.Mapping, BaseNestedField):
         return ["map", value_field.get_terraform_type()]
 
 
-class Set(marshmallow.fields.List, BaseNestedField):
+class Set(List, BaseNestedField):
     def get_terraform_type(self) -> typing.Any:
         return ["set", self.inner.get_terraform_type()]
 

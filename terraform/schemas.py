@@ -103,14 +103,7 @@ class SchemaMeta(marshmallow.schema.SchemaMeta, abc.ABCMeta):
 
 
 class Schema(marshmallow.Schema, metaclass=SchemaMeta):
-    # TODO: subclass BaseField
-
     schema_version: typing.Optional[int] = None
-
-    def get_attribute(self, obj: typing.Any, attr: str, default: typing.Any):
-        if default == marshmallow.missing:
-            default = None
-        return super().get_attribute(obj, attr, default)
 
     def get_terraform_type(self) -> typing.Any:
         return [
@@ -138,13 +131,22 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
             field = typing.cast(fields.BaseField, field)
 
             if (
-                not isinstance(field, fields.Map)
-                and hasattr(field, "inner")
-                and isinstance(field.inner, fields.Nested)
-                and isinstance(field.inner.nested, Resource)
+                (
+                    (
+                        isinstance(field, fields.Map)
+                        and not isinstance(
+                            field.value_field, (Resource, fields.BaseField)
+                        )
+                    )
+                    or (
+                        isinstance(field, fields.List)
+                        and isinstance(field.inner, fields.Nested)
+                        and isinstance(field.inner.nested, Schema)
+                    )
+                )
+                # Computed-only fields are always handled as attributes
                 and not (field.metadata["computed"] and not field.metadata["optional"])
             ):
-                print(field.name, field)
                 if isinstance(field, fields.Set):
                     nesting = NestingMode.SET
                 elif isinstance(field, fields.List):
@@ -198,7 +200,6 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
                     computed=field.metadata["computed"],
                     sensitive=field.metadata["sensitive"],
                 )
-                continue
 
         return Block(attributes=attributes, block_types=block_types)
 
