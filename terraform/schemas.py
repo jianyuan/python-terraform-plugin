@@ -11,7 +11,7 @@ from terraform import fields, settings
 from terraform.protos import tfplugin5_1_pb2
 
 
-class NestingMode(enum.IntEnum):
+class NestingMode(enum.Enum):
     INVALID = enum.auto()
     SINGLE = enum.auto()
     GROUP = enum.auto()

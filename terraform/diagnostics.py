@@ -83,6 +83,10 @@ class Diagnostic:
             ),
         )
 
+    @property
+    def flattened_attribute_path(self) -> str:
+        return ".".join(str(attribute_path) for attribute_path in self.attribute_paths)
+
 
 @dataclasses.dataclass
 class Diagnostics:
@@ -100,8 +104,8 @@ class Diagnostics:
     @classmethod
     def from_schema_errors(
         cls,
-        *,
         errors: typing.Optional[typing.Dict[str, typing.Any]],
+        *,
         severity=Severity.ERROR,
     ):
         def walk_errors(
@@ -150,3 +154,18 @@ class Diagnostics:
                     raise NotImplementedError
 
         return cls(diagnostics=list(walk(errors, [])))
+
+    def include_attribute_path_in_summary(self) -> "Diagnostics":
+        return dataclasses.replace(
+            self,
+            diagnostics=[
+                dataclasses.replace(
+                    diagnostic,
+                    summary=(
+                        f"{diagnostic.flattened_attribute_path}: "
+                        f"{diagnostic.summary}"
+                    ),
+                )
+                for diagnostic in self.diagnostics
+            ],
+        )

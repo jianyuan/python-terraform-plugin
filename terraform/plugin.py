@@ -11,7 +11,7 @@ import typing
 import grpclib.server
 from grpclib.utils import graceful_exit
 
-from terraform import schemas, settings, utils
+from terraform import diagnostics, schemas, settings, utils
 from terraform.grpc_controller import GRPCController
 from terraform.protos import tfplugin5_1_grpc, tfplugin5_1_pb2
 
@@ -97,16 +97,30 @@ class ProviderService(tfplugin5_1_grpc.ProviderBase):
         config = utils.from_dynamic_value_proto(request.config)
 
         prepared_config = self.provider.dump(config)
-
-        # TODO: diagnostics
+        errors = self.provider.validate(prepared_config)
+        provider_diagnostics = diagnostics.Diagnostics.from_schema_errors(errors)
+        provider_diagnostics = provider_diagnostics.include_attribute_path_in_summary()
 
         response = tfplugin5_1_pb2.PrepareProviderConfig.Response(
             prepared_config=utils.to_dynamic_value_proto(prepared_config),
+            diagnostics=provider_diagnostics.to_proto(),
         )
         await stream.send_message(response)
 
     async def ValidateResourceTypeConfig(self, stream: grpclib.server.Stream) -> None:
-        pass
+        request = await stream.recv_message()
+
+        resource = self.provider.resources[request.type_name]
+        config = utils.from_dynamic_value_proto(request.config)
+
+        prepared_config = resource.dump(config)
+        errors = resource.validate(prepared_config)
+        resource_diagnostics = diagnostics.Diagnostics.from_schema_errors(errors)
+
+        response = tfplugin5_1_pb2.ValidateResourceTypeConfig.Response(
+            diagnostics=resource_diagnostics.to_proto()
+        )
+        await stream.send_message(response)
 
     async def ValidateDataSourceConfig(self, stream: grpclib.server.Stream) -> None:
         request = await stream.recv_message()
@@ -114,10 +128,13 @@ class ProviderService(tfplugin5_1_grpc.ProviderBase):
         resource = self.provider.data_sources[request.type_name]
         config = utils.from_dynamic_value_proto(request.config)
 
-        # TODO: validate config and report back
-        resource.validate(config)
+        prepared_config = resource.dump(config)
+        errors = resource.validate(prepared_config)
+        resource_diagnostics = diagnostics.Diagnostics.from_schema_errors(errors)
 
-        response = tfplugin5_1_pb2.ValidateDataSourceConfig.Response()
+        response = tfplugin5_1_pb2.ValidateDataSourceConfig.Response(
+            diagnostics=resource_diagnostics.to_proto()
+        )
         await stream.send_message(response)
 
     async def UpgradeResourceState(self, stream: grpclib.server.Stream) -> None:
