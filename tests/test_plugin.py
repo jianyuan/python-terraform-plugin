@@ -3,7 +3,7 @@ import typing
 import pytest
 from grpclib.testing import ChannelFor
 
-from terraform import fields, plugin, utils
+from terraform import fields, plugin, schemas, utils
 from terraform.protos import tfplugin5_1_grpc, tfplugin5_1_pb2
 
 
@@ -12,13 +12,13 @@ from terraform.protos import tfplugin5_1_grpc, tfplugin5_1_pb2
     "provider,input_config,expected_output_config",
     (
         pytest.param(
-            plugin.Provider.from_dict({"foo": fields.String(optional=True)})(),
+            schemas.Provider.from_dict({"foo": fields.String(optional=True)})(),
             {"foo": "bar"},
             {"foo": "bar"},
             id="prepare",
         ),
         pytest.param(
-            plugin.Provider.from_dict(
+            schemas.Provider.from_dict(
                 {"foo": fields.String(optional=True, default="default")}
             )(),
             {"foo": None},
@@ -26,7 +26,7 @@ from terraform.protos import tfplugin5_1_grpc, tfplugin5_1_pb2
             id="default",
         ),
         pytest.param(
-            plugin.Provider.from_dict(
+            schemas.Provider.from_dict(
                 {"foo": fields.String(optional=True, default=lambda: "defaultfunc")}
             )(),
             {"foo": None},
@@ -34,7 +34,7 @@ from terraform.protos import tfplugin5_1_grpc, tfplugin5_1_pb2
             id="defaultfunc",
         ),
         pytest.param(
-            plugin.Provider.from_dict(
+            schemas.Provider.from_dict(
                 {"foo": fields.String(required=True, default=lambda: "defaultfunc")}
             )(),
             {"foo": None},
@@ -42,13 +42,13 @@ from terraform.protos import tfplugin5_1_grpc, tfplugin5_1_pb2
             id="defaultfunc required",
         ),
         pytest.param(
-            plugin.Provider.from_dict({"foo": fields.String(required=True)})(),
+            schemas.Provider.from_dict({"foo": fields.String(required=True)})(),
             {"foo": 3},
             {"foo": "3"},
             id="incorrect type",
         ),
         pytest.param(
-            plugin.Provider.from_dict(
+            schemas.Provider.from_dict(
                 {"foo": fields.String(optional=True, default=True)}
             )(),
             {"foo": None},
@@ -56,7 +56,7 @@ from terraform.protos import tfplugin5_1_grpc, tfplugin5_1_pb2
             id="incorrect default type",
         ),
         pytest.param(
-            plugin.Provider.from_dict(
+            schemas.Provider.from_dict(
                 {"foo": fields.Bool(optional=True, default="")}
             )(),
             {"foo": None},
@@ -64,7 +64,7 @@ from terraform.protos import tfplugin5_1_grpc, tfplugin5_1_pb2
             id="incorrect default bool type",
         ),
         pytest.param(
-            plugin.Provider.from_dict(
+            schemas.Provider.from_dict(
                 {
                     "foo": fields.Bool(
                         optional=True, default="do not use", removed="don't use this",
@@ -78,7 +78,7 @@ from terraform.protos import tfplugin5_1_grpc, tfplugin5_1_pb2
     ),
 )
 async def test_prepare_provider_config(
-    provider: plugin.Provider,
+    provider: schemas.Provider,
     input_config: typing.Dict[str, typing.Any],
     expected_output_config: typing.Dict[str, typing.Any],
 ):

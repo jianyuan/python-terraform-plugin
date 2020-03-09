@@ -245,3 +245,48 @@ class Resource(Schema):
 
     async def exists(self, data: ResourceData):
         ...
+
+
+class Resources(typing.Mapping[str, Resource]):
+    def __init__(self, resources: typing.Optional[typing.Sequence[Resource]] = None):
+        self.resources: typing.Dict[str, Resource] = {}
+        if resources is not None:
+            for resource in resources:
+                self.add(resource)
+
+    def __getitem__(self, name: str) -> Resource:
+        return self.resources[name]
+
+    def __iter__(self):
+        return iter(self.resources)
+
+    def __len__(self) -> int:
+        return len(self.resources)
+
+    def add(self, resource: Resource):
+        self.resources[resource.name] = resource
+
+
+class Provider(Schema):
+    name: str
+    terraform_version: typing.Optional[str] = None
+
+    def __init__(
+        self,
+        resources: typing.Optional[typing.Sequence[Resource]] = None,
+        data_sources: typing.Optional[typing.Sequence[Resource]] = None,
+    ):
+        super().__init__()
+
+        self.resources = Resources(resources)
+        self.data_sources = Resources(data_sources)
+        self.config = {}
+
+    def add_resource(self, resource: Resource):
+        self.resources.add(resource)
+
+    def add_data_source(self, data_source: Resource):
+        self.data_sources.add(data_source)
+
+    def configure(self, config: typing.Dict[str, typing.Any]):
+        self.config = config

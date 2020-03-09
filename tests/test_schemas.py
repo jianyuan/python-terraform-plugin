@@ -385,7 +385,7 @@ def test_schema(subject: schemas.Schema, want: schemas.Block):
                                         block_types=[
                                             tfplugin5_1_pb2.Schema.NestedBlock(
                                                 type_name="set",
-                                                nesting=tfplugin5_1_pb2.Schema.NestedBlock.SET,
+                                                nesting=tfplugin5_1_pb2.Schema.NestedBlock.SET,  # noqa
                                                 block=tfplugin5_1_pb2.Schema.Block(),
                                             )
                                         ]

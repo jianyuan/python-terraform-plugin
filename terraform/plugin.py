@@ -1,6 +1,7 @@
 import asyncio
 import base64
 import contextlib
+import json
 import logging
 import os
 import ssl
@@ -11,65 +12,18 @@ import typing
 import grpclib.server
 from grpclib.utils import graceful_exit
 
-from terraform import diagnostics, schemas, settings, utils
+from terraform import diagnostics, schemas, settings, unknowns, utils
 from terraform.grpc_controller import GRPCController
 from terraform.protos import tfplugin5_1_grpc, tfplugin5_1_pb2
 
 logger = logging.getLogger(__name__)
 
 
-class Resources(typing.Mapping[str, schemas.Resource]):
-    def __init__(
-        self, resources: typing.Optional[typing.Sequence[schemas.Resource]] = None
-    ):
-        self.resources: typing.Dict[str, schemas.Resource] = {}
-        if resources is not None:
-            for resource in resources:
-                self.add(resource)
-
-    def __getitem__(self, name: str) -> schemas.Resource:
-        return self.resources[name]
-
-    def __iter__(self):
-        return iter(self.resources)
-
-    def __len__(self) -> int:
-        return len(self.resources)
-
-    def add(self, resource: schemas.Resource):
-        self.resources[resource.name] = resource
-
-
-class Provider(schemas.Schema):
-    name: str
-    terraform_version: typing.Optional[str] = None
-
-    def __init__(
-        self,
-        resources: typing.Optional[typing.Sequence[schemas.Resource]] = None,
-        data_sources: typing.Optional[typing.Sequence[schemas.Resource]] = None,
-    ):
-        super().__init__()
-
-        self.resources = Resources(resources)
-        self.data_sources = Resources(data_sources)
-        self.config = {}
-
-    def add_resource(self, resource: schemas.Resource):
-        self.resources.add(resource)
-
-    def add_data_source(self, data_source: schemas.Resource):
-        self.data_sources.add(data_source)
-
-    def configure(self, config: typing.Dict[str, typing.Any]):
-        self.config = config
-
-
 class ProviderService(tfplugin5_1_grpc.ProviderBase):
     def __init__(
         self,
         *,
-        provider: Provider,
+        provider: schemas.Provider,
         shutdown_event: typing.Optional[asyncio.Event] = None,
     ):
         self.provider = provider
@@ -154,7 +108,38 @@ class ProviderService(tfplugin5_1_grpc.ProviderBase):
         pass
 
     async def PlanResourceChange(self, stream: grpclib.server.Stream) -> None:
-        pass
+        request = await stream.recv_message()
+
+        resource = self.provider.resources[request.type_name]
+        prior_state = utils.from_dynamic_value_proto(request.prior_state)
+        proposed_new_state = utils.from_dynamic_value_proto(request.proposed_new_state)
+        config = utils.from_dynamic_value_proto(request.config)
+        prior_private = (
+            json.loads(request.prior_private) if request.prior_private else None
+        )
+
+        destroy = proposed_new_state is None
+        create = prior_state is None
+
+        if destroy:
+            planned_state = proposed_new_state
+            planned_private = prior_private
+        else:
+            # TODO: implement me
+            planned_state = proposed_new_state
+
+            if create:
+                planned_state = unknowns.set_unknowns(
+                    planned_state, resource.to_block()
+                )
+
+            planned_private = prior_private
+
+        response = tfplugin5_1_pb2.PlanResourceChange.Response(
+            planned_state=utils.to_dynamic_value_proto(planned_state),
+            planned_private=json.dumps(planned_private).encode("ascii"),
+        )
+        await stream.send_message(response)
 
     async def ApplyResourceChange(self, stream: grpclib.server.Stream) -> None:
         pass
@@ -220,7 +205,7 @@ async def wait_shutdown_event(
     server.close()
 
 
-async def run_server(*, provider: Provider):
+async def run_server(*, provider: schemas.Provider):
     if os.getenv(settings.MAGIC_COOKIE_KEY) != settings.MAGIC_COOKIE_VALUE:
         logger.error(
             "This is a Terraform plugin. "
@@ -277,5 +262,5 @@ async def run_server(*, provider: Provider):
             await server.wait_closed()
 
 
-def run(*, provider: Provider):
+def run(*, provider: schemas.Provider):
     asyncio.run(run_server(provider=provider))
