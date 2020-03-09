@@ -92,7 +92,17 @@ class ProviderService(tfplugin5_1_grpc.ProviderBase):
         await stream.send_message(response)
 
     async def UpgradeResourceState(self, stream: grpclib.server.Stream) -> None:
-        pass
+        request = await stream.recv_message()
+
+        resource = self.provider.resources[request.type_name]
+        state = json.loads(request.raw_state.json)
+
+        upgraded_state = resource.upgrade_state(state=state, version=request.version)
+
+        response = tfplugin5_1_pb2.UpgradeResourceState.Response(
+            upgraded_state=utils.to_dynamic_value_proto(upgraded_state)
+        )
+        await stream.send_message(response)
 
     async def Configure(self, stream: grpclib.server.Stream) -> None:
         request = await stream.recv_message()

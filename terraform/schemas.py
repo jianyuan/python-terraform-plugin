@@ -231,6 +231,11 @@ class Resource(Schema):
     name: str
     id = fields.String(optional=True, computed=True)
 
+    def upgrade_state(
+        self, *, state: typing.Dict[str, typing.Any], version: int
+    ) -> typing.Dict[str, typing.Any]:
+        return self.dump(state)
+
     async def create(self, data: ResourceData):
         ...
 
