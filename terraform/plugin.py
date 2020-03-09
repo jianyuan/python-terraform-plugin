@@ -132,6 +132,8 @@ class ProviderService(tfplugin5_1_grpc.ProviderBase):
                 planned_state = unknowns.set_unknowns(
                     planned_state, resource.to_block()
                 )
+            else:
+                raise NotImplementedError
 
             planned_private = prior_private
 
@@ -142,7 +144,39 @@ class ProviderService(tfplugin5_1_grpc.ProviderBase):
         await stream.send_message(response)
 
     async def ApplyResourceChange(self, stream: grpclib.server.Stream) -> None:
-        pass
+        request = await stream.recv_message()
+
+        resource = self.provider.resources[request.type_name]
+        prior_state = utils.from_dynamic_value_proto(request.prior_state)
+        planned_state = utils.from_dynamic_value_proto(request.planned_state)
+        config = utils.from_dynamic_value_proto(request.config)
+        planned_private = (
+            json.loads(request.planned_private) if request.planned_private else None
+        )
+
+        destroy = planned_state is None
+        create = prior_state is None
+
+        if destroy:
+            new_state = planned_state
+            private = planned_private
+        else:
+            # TODO: implement me
+            data = schemas.ResourceData(planned_state)
+
+            if create:
+                await resource.create(data=data)
+            else:
+                raise NotImplementedError
+
+            new_state = dict(data)
+            private = planned_private
+
+        response = tfplugin5_1_pb2.ApplyResourceChange.Response(
+            new_state=utils.to_dynamic_value_proto(new_state),
+            private=json.dumps(private).encode("ascii"),
+        )
+        await stream.send_message(response)
 
     async def ImportResourceState(self, stream: grpclib.server.Stream) -> None:
         pass
