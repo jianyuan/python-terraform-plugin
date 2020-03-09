@@ -229,6 +229,8 @@ class ResourceData(typing.MutableMapping):
 
 class Resource(Schema):
     name: str
+    provider: "Provider"
+
     id = fields.String(optional=True, computed=True)
 
     def upgrade_state(
@@ -253,8 +255,15 @@ class Resource(Schema):
 
 
 class Resources(typing.Mapping[str, Resource]):
-    def __init__(self, resources: typing.Optional[typing.Sequence[Resource]] = None):
+    def __init__(
+        self,
+        resources: typing.Optional[typing.Sequence[Resource]] = None,
+        *,
+        provider: "Provider"
+    ):
         self.resources: typing.Dict[str, Resource] = {}
+        self.provider = provider
+
         if resources is not None:
             for resource in resources:
                 self.add(resource)
@@ -269,6 +278,7 @@ class Resources(typing.Mapping[str, Resource]):
         return len(self.resources)
 
     def add(self, resource: Resource):
+        resource.provider = self.provider
         self.resources[resource.name] = resource
 
 
@@ -283,9 +293,9 @@ class Provider(Schema):
     ):
         super().__init__()
 
-        self.resources = Resources(resources)
-        self.data_sources = Resources(data_sources)
-        self.config = {}
+        self.resources = Resources(resources, provider=self)
+        self.data_sources = Resources(data_sources, provider=self)
+        self.config: typing.Dict[str, typing.Any] = {}
 
     def add_resource(self, resource: Resource):
         self.resources.add(resource)
