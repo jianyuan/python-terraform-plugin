@@ -59,6 +59,12 @@ class BaseNestedField(BaseField):
         }
         super().__init__(**kwargs, **metadata)
 
+    def get_inner(self):
+        raise NotImplementedError
+
+    def get_terraform_type(self) -> typing.Any:
+        return [self.terraform_type, self.get_inner().get_terraform_type()]
+
 
 class Bool(marshmallow.fields.Boolean, BaseField):
     terraform_type = "bool"
@@ -77,32 +83,32 @@ class String(marshmallow.fields.String, BaseField):
 
 
 class List(marshmallow.fields.List, BaseNestedField):
-    def get_terraform_type(self) -> typing.Any:
-        return ["list", self.inner.get_terraform_type()]
+    terraform_type = "list"
+
+    def get_inner(self):
+        return self.inner
+
+
+class Set(List, BaseNestedField):
+    terraform_type = "set"
 
 
 class Map(marshmallow.fields.Mapping, BaseNestedField):
+    terraform_type = "map"
+
     def __init__(self, values=None, **kwargs):
         if values is None:
             values = String()
         super().__init__(String(), values, **kwargs)
 
-    def get_terraform_type(self) -> typing.Any:
+    def get_inner(self):
         from terraform import schemas
 
         if isinstance(self.value_field, Nested) and isinstance(
             self.value_field.nested, schemas.Resource
         ):
-            value_field = String()
-        else:
-            value_field = self.value_field
-
-        return ["map", value_field.get_terraform_type()]
-
-
-class Set(List, BaseNestedField):
-    def get_terraform_type(self) -> typing.Any:
-        return ["set", self.inner.get_terraform_type()]
+            return String()
+        return self.value_field
 
 
 class Nested(marshmallow.fields.Nested, BaseField):
