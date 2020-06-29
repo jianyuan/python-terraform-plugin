@@ -17,6 +17,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
     package="plugin",
     syntax="proto3",
     serialized_options=b"Z\006plugin",
+    create_key=_descriptor._internal_create_key,
     serialized_pb=b'\n&terraform/protos/grpc_controller.proto\x12\x06plugin"\x07\n\x05\x45mpty2:\n\x0eGRPCController\x12(\n\x08Shutdown\x12\r.plugin.Empty\x1a\r.plugin.EmptyB\x08Z\x06pluginb\x06proto3',
 )
 
@@ -27,6 +28,7 @@ _EMPTY = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[],
     extensions=[],
     nested_types=[],
@@ -63,6 +65,7 @@ _GRPCCONTROLLER = _descriptor.ServiceDescriptor(
     file=DESCRIPTOR,
     index=0,
     serialized_options=None,
+    create_key=_descriptor._internal_create_key,
     serialized_start=59,
     serialized_end=117,
     methods=[
@@ -74,6 +77,7 @@ _GRPCCONTROLLER = _descriptor.ServiceDescriptor(
             input_type=_EMPTY,
             output_type=_EMPTY,
             serialized_options=None,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
 )

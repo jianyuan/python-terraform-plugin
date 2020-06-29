@@ -107,7 +107,7 @@ message Schema {
 
     // The version of the schema.
     // Schemas are versioned, so that providers can upgrade a saved resource
-    // state when the schema is changed.
+    // state when the schema is changed. 
     int64 version = 1;
 
     // Block is the top level configuration block for this schema.
@@ -234,13 +234,13 @@ message PlanResourceChange {
         DynamicValue prior_state = 2;
         DynamicValue proposed_new_state = 3;
         DynamicValue config = 4;
-        bytes prior_private = 5;
+        bytes prior_private = 5; 
     }
 
     message Response {
         DynamicValue planned_state = 1;
         repeated AttributePath requires_replace = 2;
-        bytes planned_private = 3;
+        bytes planned_private = 3; 
         repeated Diagnostic diagnostics = 4;
 
 
@@ -265,11 +265,11 @@ message ApplyResourceChange {
         DynamicValue prior_state = 2;
         DynamicValue planned_state = 3;
         DynamicValue config = 4;
-        bytes planned_private = 5;
+        bytes planned_private = 5; 
     }
     message Response {
         DynamicValue new_state = 1;
-        bytes private = 2;
+        bytes private = 2; 
         repeated Diagnostic diagnostics = 3;
 
         // This may be set only by the helper/schema "SDK" in the main Terraform
@@ -349,5 +349,5 @@ message ProvisionResource {
     message Response {
         string output  = 1;
         repeated Diagnostic diagnostics = 2;
-    }
+    }   
 }

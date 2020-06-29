@@ -17,6 +17,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
     package="tfplugin5",
     syntax="proto3",
     serialized_options=None,
+    create_key=_descriptor._internal_create_key,
     serialized_pb=b'\n"terraform/protos/tfplugin5_1.proto\x12\ttfplugin5"-\n\x0c\x44ynamicValue\x12\x0f\n\x07msgpack\x18\x01 \x01(\x0c\x12\x0c\n\x04json\x18\x02 \x01(\x0c"\xbd\x01\n\nDiagnostic\x12\x30\n\x08severity\x18\x01 \x01(\x0e\x32\x1e.tfplugin5.Diagnostic.Severity\x12\x0f\n\x07summary\x18\x02 \x01(\t\x12\x0e\n\x06\x64\x65tail\x18\x03 \x01(\t\x12+\n\tattribute\x18\x04 \x01(\x0b\x32\x18.tfplugin5.AttributePath"/\n\x08Severity\x12\x0b\n\x07INVALID\x10\x00\x12\t\n\x05\x45RROR\x10\x01\x12\x0b\n\x07WARNING\x10\x02"\xa4\x01\n\rAttributePath\x12,\n\x05steps\x18\x01 \x03(\x0b\x32\x1d.tfplugin5.AttributePath.Step\x1a\x65\n\x04Step\x12\x18\n\x0e\x61ttribute_name\x18\x01 \x01(\tH\x00\x12\x1c\n\x12\x65lement_key_string\x18\x02 \x01(\tH\x00\x12\x19\n\x0f\x65lement_key_int\x18\x03 \x01(\x03H\x00\x42\n\n\x08selector",\n\x04Stop\x1a\t\n\x07Request\x1a\x19\n\x08Response\x12\r\n\x05\x45rror\x18\x01 \x01(\t"{\n\x08RawState\x12\x0c\n\x04json\x18\x01 \x01(\x0c\x12\x31\n\x07\x66latmap\x18\x02 \x03(\x0b\x32 .tfplugin5.RawState.FlatmapEntry\x1a.\n\x0c\x46latmapEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01"\xc4\x04\n\x06Schema\x12\x0f\n\x07version\x18\x01 \x01(\x03\x12&\n\x05\x62lock\x18\x02 \x01(\x0b\x32\x17.tfplugin5.Schema.Block\x1a}\n\x05\x42lock\x12\x0f\n\x07version\x18\x01 \x01(\x03\x12/\n\nattributes\x18\x02 \x03(\x0b\x32\x1b.tfplugin5.Schema.Attribute\x12\x32\n\x0b\x62lock_types\x18\x03 \x03(\x0b\x32\x1d.tfplugin5.Schema.NestedBlock\x1a\x85\x01\n\tAttribute\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0c\n\x04type\x18\x02 \x01(\x0c\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\x10\n\x08required\x18\x04 \x01(\x08\x12\x10\n\x08optional\x18\x05 \x01(\x08\x12\x10\n\x08\x63omputed\x18\x06 \x01(\x08\x12\x11\n\tsensitive\x18\x07 \x01(\x08\x1a\xf9\x01\n\x0bNestedBlock\x12\x11\n\ttype_name\x18\x01 \x01(\t\x12&\n\x05\x62lock\x18\x02 \x01(\x0b\x32\x17.tfplugin5.Schema.Block\x12:\n\x07nesting\x18\x03 \x01(\x0e\x32).tfplugin5.Schema.NestedBlock.NestingMode\x12\x11\n\tmin_items\x18\x04 \x01(\x03\x12\x11\n\tmax_items\x18\x05 \x01(\x03"M\n\x0bNestingMode\x12\x0b\n\x07INVALID\x10\x00\x12\n\n\x06SINGLE\x10\x01\x12\x08\n\x04LIST\x10\x02\x12\x07\n\x03SET\x10\x03\x12\x07\n\x03MAP\x10\x04\x12\t\n\x05GROUP\x10\x05"\xc5\x03\n\x11GetProviderSchema\x1a\t\n\x07Request\x1a\xa4\x03\n\x08Response\x12#\n\x08provider\x18\x01 \x01(\x0b\x32\x11.tfplugin5.Schema\x12T\n\x10resource_schemas\x18\x02 \x03(\x0b\x32:.tfplugin5.GetProviderSchema.Response.ResourceSchemasEntry\x12Y\n\x13\x64\x61ta_source_schemas\x18\x03 \x03(\x0b\x32<.tfplugin5.GetProviderSchema.Response.DataSourceSchemasEntry\x12*\n\x0b\x64iagnostics\x18\x04 \x03(\x0b\x32\x15.tfplugin5.Diagnostic\x1aI\n\x14ResourceSchemasEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12 \n\x05value\x18\x02 \x01(\x0b\x32\x11.tfplugin5.Schema:\x02\x38\x01\x1aK\n\x16\x44\x61taSourceSchemasEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12 \n\x05value\x18\x02 \x01(\x0b\x32\x11.tfplugin5.Schema:\x02\x38\x01"\xb5\x01\n\x15PrepareProviderConfig\x1a\x32\n\x07Request\x12\'\n\x06\x63onfig\x18\x01 \x01(\x0b\x32\x17.tfplugin5.DynamicValue\x1ah\n\x08Response\x12\x30\n\x0fprepared_config\x18\x01 \x01(\x0b\x32\x17.tfplugin5.DynamicValue\x12*\n\x0b\x64iagnostics\x18\x02 \x03(\x0b\x32\x15.tfplugin5.Diagnostic"\xd6\x01\n\x14UpgradeResourceState\x1aU\n\x07Request\x12\x11\n\ttype_name\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\x03\x12&\n\traw_state\x18\x03 \x01(\x0b\x32\x13.tfplugin5.RawState\x1ag\n\x08Response\x12/\n\x0eupgraded_state\x18\x01 \x01(\x0b\x32\x17.tfplugin5.DynamicValue\x12*\n\x0b\x64iagnostics\x18\x02 \x03(\x0b\x32\x15.tfplugin5.Diagnostic"\x9b\x01\n\x1aValidateResourceTypeConfig\x1a\x45\n\x07Request\x12\x11\n\ttype_name\x18\x01 \x01(\t\x12\'\n\x06\x63onfig\x18\x02 \x01(\x0b\x32\x17.tfplugin5.DynamicValue\x1a\x36\n\x08Response\x12*\n\x0b\x64iagnostics\x18\x01 \x03(\x0b\x32\x15.tfplugin5.Diagnostic"\x99\x01\n\x18ValidateDataSourceConfig\x1a\x45\n\x07Request\x12\x11\n\ttype_name\x18\x01 \x01(\t\x12\'\n\x06\x63onfig\x18\x02 \x01(\x0b\x32\x17.tfplugin5.DynamicValue\x1a\x36\n\x08Response\x12*\n\x0b\x64iagnostics\x18\x01 \x03(\x0b\x32\x15.tfplugin5.Diagnostic"\x92\x01\n\tConfigure\x1aM\n\x07Request\x12\x19\n\x11terraform_version\x18\x01 \x01(\t\x12\'\n\x06\x63onfig\x18\x02 \x01(\x0b\x32\x17.tfplugin5.DynamicValue\x1a\x36\n\x08Response\x12*\n\x0b\x64iagnostics\x18\x01 \x03(\x0b\x32\x15.tfplugin5.Diagnostic"\xe2\x01\n\x0cReadResource\x1a]\n\x07Request\x12\x11\n\ttype_name\x18\x01 \x01(\t\x12.\n\rcurrent_state\x18\x02 \x01(\x0b\x32\x17.tfplugin5.DynamicValue\x12\x0f\n\x07private\x18\x03 \x01(\x0c\x1as\n\x08Response\x12*\n\tnew_state\x18\x01 \x01(\x0b\x32\x17.tfplugin5.DynamicValue\x12*\n\x0b\x64iagnostics\x18\x02 \x03(\x0b\x32\x15.tfplugin5.Diagnostic\x12\x0f\n\x07private\x18\x03 \x01(\x0c"\xa8\x03\n\x12PlanResourceChange\x1a\xbf\x01\n\x07Request\x12\x11\n\ttype_name\x18\x01 \x01(\t\x12,\n\x0bprior_state\x18\x02 \x01(\x0b\x32\x17.tfplugin5.DynamicValue\x12\x33\n\x12proposed_new_state\x18\x03 \x01(\x0b\x32\x17.tfplugin5.DynamicValue\x12\'\n\x06\x63onfig\x18\x04 \x01(\x0b\x32\x17.tfplugin5.DynamicValue\x12\x15\n\rprior_private\x18\x05 \x01(\x0c\x1a\xcf\x01\n\x08Response\x12.\n\rplanned_state\x18\x01 \x01(\x0b\x32\x17.tfplugin5.DynamicValue\x12\x32\n\x10requires_replace\x18\x02 \x03(\x0b\x32\x18.tfplugin5.AttributePath\x12\x17\n\x0fplanned_private\x18\x03 \x01(\x0c\x12*\n\x0b\x64iagnostics\x18\x04 \x03(\x0b\x32\x15.tfplugin5.Diagnostic\x12\x1a\n\x12legacy_type_system\x18\x05 \x01(\x08"\xe6\x02\n\x13\x41pplyResourceChange\x1a\xbc\x01\n\x07Request\x12\x11\n\ttype_name\x18\x01 \x01(\t\x12,\n\x0bprior_state\x18\x02 \x01(\x0b\x32\x17.tfplugin5.DynamicValue\x12.\n\rplanned_state\x18\x03 \x01(\x0b\x32\x17.tfplugin5.DynamicValue\x12\'\n\x06\x63onfig\x18\x04 \x01(\x0b\x32\x17.tfplugin5.DynamicValue\x12\x17\n\x0fplanned_private\x18\x05 \x01(\x0c\x1a\x8f\x01\n\x08Response\x12*\n\tnew_state\x18\x01 \x01(\x0b\x32\x17.tfplugin5.DynamicValue\x12\x0f\n\x07private\x18\x02 \x01(\x0c\x12*\n\x0b\x64iagnostics\x18\x03 \x03(\x0b\x32\x15.tfplugin5.Diagnostic\x12\x1a\n\x12legacy_type_system\x18\x04 \x01(\x08"\xa5\x02\n\x13ImportResourceState\x1a(\n\x07Request\x12\x11\n\ttype_name\x18\x01 \x01(\t\x12\n\n\x02id\x18\x02 \x01(\t\x1a^\n\x10ImportedResource\x12\x11\n\ttype_name\x18\x01 \x01(\t\x12&\n\x05state\x18\x02 \x01(\x0b\x32\x17.tfplugin5.DynamicValue\x12\x0f\n\x07private\x18\x03 \x01(\x0c\x1a\x83\x01\n\x08Response\x12K\n\x12imported_resources\x18\x01 \x03(\x0b\x32/.tfplugin5.ImportResourceState.ImportedResource\x12*\n\x0b\x64iagnostics\x18\x02 \x03(\x0b\x32\x15.tfplugin5.Diagnostic"\xb7\x01\n\x0eReadDataSource\x1a\x45\n\x07Request\x12\x11\n\ttype_name\x18\x01 \x01(\t\x12\'\n\x06\x63onfig\x18\x02 \x01(\x0b\x32\x17.tfplugin5.DynamicValue\x1a^\n\x08Response\x12&\n\x05state\x18\x01 \x01(\x0b\x32\x17.tfplugin5.DynamicValue\x12*\n\x0b\x64iagnostics\x18\x02 \x03(\x0b\x32\x15.tfplugin5.Diagnostic"\x81\x01\n\x14GetProvisionerSchema\x1a\t\n\x07Request\x1a^\n\x08Response\x12&\n\x0bprovisioner\x18\x01 \x01(\x0b\x32\x11.tfplugin5.Schema\x12*\n\x0b\x64iagnostics\x18\x02 \x03(\x0b\x32\x15.tfplugin5.Diagnostic"\x87\x01\n\x19ValidateProvisionerConfig\x1a\x32\n\x07Request\x12\'\n\x06\x63onfig\x18\x01 \x01(\x0b\x32\x17.tfplugin5.DynamicValue\x1a\x36\n\x08Response\x12*\n\x0b\x64iagnostics\x18\x01 \x03(\x0b\x32\x15.tfplugin5.Diagnostic"\xbc\x01\n\x11ProvisionResource\x1a_\n\x07Request\x12\'\n\x06\x63onfig\x18\x01 \x01(\x0b\x32\x17.tfplugin5.DynamicValue\x12+\n\nconnection\x18\x02 \x01(\x0b\x32\x17.tfplugin5.DynamicValue\x1a\x46\n\x08Response\x12\x0e\n\x06output\x18\x01 \x01(\t\x12*\n\x0b\x64iagnostics\x18\x02 \x03(\x0b\x32\x15.tfplugin5.Diagnostic2\x97\t\n\x08Provider\x12X\n\tGetSchema\x12$.tfplugin5.GetProviderSchema.Request\x1a%.tfplugin5.GetProviderSchema.Response\x12l\n\x15PrepareProviderConfig\x12(.tfplugin5.PrepareProviderConfig.Request\x1a).tfplugin5.PrepareProviderConfig.Response\x12{\n\x1aValidateResourceTypeConfig\x12-.tfplugin5.ValidateResourceTypeConfig.Request\x1a..tfplugin5.ValidateResourceTypeConfig.Response\x12u\n\x18ValidateDataSourceConfig\x12+.tfplugin5.ValidateDataSourceConfig.Request\x1a,.tfplugin5.ValidateDataSourceConfig.Response\x12i\n\x14UpgradeResourceState\x12\'.tfplugin5.UpgradeResourceState.Request\x1a(.tfplugin5.UpgradeResourceState.Response\x12H\n\tConfigure\x12\x1c.tfplugin5.Configure.Request\x1a\x1d.tfplugin5.Configure.Response\x12Q\n\x0cReadResource\x12\x1f.tfplugin5.ReadResource.Request\x1a .tfplugin5.ReadResource.Response\x12\x63\n\x12PlanResourceChange\x12%.tfplugin5.PlanResourceChange.Request\x1a&.tfplugin5.PlanResourceChange.Response\x12\x66\n\x13\x41pplyResourceChange\x12&.tfplugin5.ApplyResourceChange.Request\x1a\'.tfplugin5.ApplyResourceChange.Response\x12\x66\n\x13ImportResourceState\x12&.tfplugin5.ImportResourceState.Request\x1a\'.tfplugin5.ImportResourceState.Response\x12W\n\x0eReadDataSource\x12!.tfplugin5.ReadDataSource.Request\x1a".tfplugin5.ReadDataSource.Response\x12\x39\n\x04Stop\x12\x17.tfplugin5.Stop.Request\x1a\x18.tfplugin5.Stop.Response2\x86\x03\n\x0bProvisioner\x12^\n\tGetSchema\x12\'.tfplugin5.GetProvisionerSchema.Request\x1a(.tfplugin5.GetProvisionerSchema.Response\x12x\n\x19ValidateProvisionerConfig\x12,.tfplugin5.ValidateProvisionerConfig.Request\x1a-.tfplugin5.ValidateProvisionerConfig.Response\x12\x62\n\x11ProvisionResource\x12$.tfplugin5.ProvisionResource.Request\x1a%.tfplugin5.ProvisionResource.Response0\x01\x12\x39\n\x04Stop\x12\x17.tfplugin5.Stop.Request\x1a\x18.tfplugin5.Stop.Responseb\x06proto3',
 )
 
@@ -26,15 +27,31 @@ _DIAGNOSTIC_SEVERITY = _descriptor.EnumDescriptor(
     full_name="tfplugin5.Diagnostic.Severity",
     filename=None,
     file=DESCRIPTOR,
+    create_key=_descriptor._internal_create_key,
     values=[
         _descriptor.EnumValueDescriptor(
-            name="INVALID", index=0, number=0, serialized_options=None, type=None
+            name="INVALID",
+            index=0,
+            number=0,
+            serialized_options=None,
+            type=None,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.EnumValueDescriptor(
-            name="ERROR", index=1, number=1, serialized_options=None, type=None
+            name="ERROR",
+            index=1,
+            number=1,
+            serialized_options=None,
+            type=None,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.EnumValueDescriptor(
-            name="WARNING", index=2, number=2, serialized_options=None, type=None
+            name="WARNING",
+            index=2,
+            number=2,
+            serialized_options=None,
+            type=None,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     containing_type=None,
@@ -49,24 +66,55 @@ _SCHEMA_NESTEDBLOCK_NESTINGMODE = _descriptor.EnumDescriptor(
     full_name="tfplugin5.Schema.NestedBlock.NestingMode",
     filename=None,
     file=DESCRIPTOR,
+    create_key=_descriptor._internal_create_key,
     values=[
         _descriptor.EnumValueDescriptor(
-            name="INVALID", index=0, number=0, serialized_options=None, type=None
+            name="INVALID",
+            index=0,
+            number=0,
+            serialized_options=None,
+            type=None,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.EnumValueDescriptor(
-            name="SINGLE", index=1, number=1, serialized_options=None, type=None
+            name="SINGLE",
+            index=1,
+            number=1,
+            serialized_options=None,
+            type=None,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.EnumValueDescriptor(
-            name="LIST", index=2, number=2, serialized_options=None, type=None
+            name="LIST",
+            index=2,
+            number=2,
+            serialized_options=None,
+            type=None,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.EnumValueDescriptor(
-            name="SET", index=3, number=3, serialized_options=None, type=None
+            name="SET",
+            index=3,
+            number=3,
+            serialized_options=None,
+            type=None,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.EnumValueDescriptor(
-            name="MAP", index=4, number=4, serialized_options=None, type=None
+            name="MAP",
+            index=4,
+            number=4,
+            serialized_options=None,
+            type=None,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.EnumValueDescriptor(
-            name="GROUP", index=5, number=5, serialized_options=None, type=None
+            name="GROUP",
+            index=5,
+            number=5,
+            serialized_options=None,
+            type=None,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     containing_type=None,
@@ -83,6 +131,7 @@ _DYNAMICVALUE = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="msgpack",
@@ -101,6 +150,7 @@ _DYNAMICVALUE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="json",
@@ -119,6 +169,7 @@ _DYNAMICVALUE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -140,6 +191,7 @@ _DIAGNOSTIC = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="severity",
@@ -158,6 +210,7 @@ _DIAGNOSTIC = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="summary",
@@ -176,6 +229,7 @@ _DIAGNOSTIC = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="detail",
@@ -194,6 +248,7 @@ _DIAGNOSTIC = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="attribute",
@@ -212,6 +267,7 @@ _DIAGNOSTIC = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -233,6 +289,7 @@ _ATTRIBUTEPATH_STEP = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="attribute_name",
@@ -251,6 +308,7 @@ _ATTRIBUTEPATH_STEP = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="element_key_string",
@@ -269,6 +327,7 @@ _ATTRIBUTEPATH_STEP = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="element_key_int",
@@ -287,6 +346,7 @@ _ATTRIBUTEPATH_STEP = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -302,6 +362,7 @@ _ATTRIBUTEPATH_STEP = _descriptor.Descriptor(
             full_name="tfplugin5.AttributePath.Step.selector",
             index=0,
             containing_type=None,
+            create_key=_descriptor._internal_create_key,
             fields=[],
         ),
     ],
@@ -315,6 +376,7 @@ _ATTRIBUTEPATH = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="steps",
@@ -333,6 +395,7 @@ _ATTRIBUTEPATH = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -354,6 +417,7 @@ _STOP_REQUEST = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[],
     extensions=[],
     nested_types=[],
@@ -373,6 +437,7 @@ _STOP_RESPONSE = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="Error",
@@ -391,6 +456,7 @@ _STOP_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -411,6 +477,7 @@ _STOP = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[],
     extensions=[],
     nested_types=[_STOP_REQUEST, _STOP_RESPONSE,],
@@ -431,6 +498,7 @@ _RAWSTATE_FLATMAPENTRY = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="key",
@@ -449,6 +517,7 @@ _RAWSTATE_FLATMAPENTRY = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="value",
@@ -467,6 +536,7 @@ _RAWSTATE_FLATMAPENTRY = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -487,6 +557,7 @@ _RAWSTATE = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="json",
@@ -505,6 +576,7 @@ _RAWSTATE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="flatmap",
@@ -523,6 +595,7 @@ _RAWSTATE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -544,6 +617,7 @@ _SCHEMA_BLOCK = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="version",
@@ -562,6 +636,7 @@ _SCHEMA_BLOCK = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="attributes",
@@ -580,6 +655,7 @@ _SCHEMA_BLOCK = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="block_types",
@@ -598,6 +674,7 @@ _SCHEMA_BLOCK = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -618,6 +695,7 @@ _SCHEMA_ATTRIBUTE = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="name",
@@ -636,6 +714,7 @@ _SCHEMA_ATTRIBUTE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="type",
@@ -654,6 +733,7 @@ _SCHEMA_ATTRIBUTE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="description",
@@ -672,6 +752,7 @@ _SCHEMA_ATTRIBUTE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="required",
@@ -690,6 +771,7 @@ _SCHEMA_ATTRIBUTE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="optional",
@@ -708,6 +790,7 @@ _SCHEMA_ATTRIBUTE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="computed",
@@ -726,6 +809,7 @@ _SCHEMA_ATTRIBUTE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="sensitive",
@@ -744,6 +828,7 @@ _SCHEMA_ATTRIBUTE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -764,6 +849,7 @@ _SCHEMA_NESTEDBLOCK = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="type_name",
@@ -782,6 +868,7 @@ _SCHEMA_NESTEDBLOCK = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="block",
@@ -800,6 +887,7 @@ _SCHEMA_NESTEDBLOCK = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="nesting",
@@ -818,6 +906,7 @@ _SCHEMA_NESTEDBLOCK = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="min_items",
@@ -836,6 +925,7 @@ _SCHEMA_NESTEDBLOCK = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="max_items",
@@ -854,6 +944,7 @@ _SCHEMA_NESTEDBLOCK = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -874,6 +965,7 @@ _SCHEMA = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="version",
@@ -892,6 +984,7 @@ _SCHEMA = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="block",
@@ -910,6 +1003,7 @@ _SCHEMA = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -931,6 +1025,7 @@ _GETPROVIDERSCHEMA_REQUEST = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[],
     extensions=[],
     nested_types=[],
@@ -950,6 +1045,7 @@ _GETPROVIDERSCHEMA_RESPONSE_RESOURCESCHEMASENTRY = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="key",
@@ -968,6 +1064,7 @@ _GETPROVIDERSCHEMA_RESPONSE_RESOURCESCHEMASENTRY = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="value",
@@ -986,6 +1083,7 @@ _GETPROVIDERSCHEMA_RESPONSE_RESOURCESCHEMASENTRY = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -1006,6 +1104,7 @@ _GETPROVIDERSCHEMA_RESPONSE_DATASOURCESCHEMASENTRY = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="key",
@@ -1024,6 +1123,7 @@ _GETPROVIDERSCHEMA_RESPONSE_DATASOURCESCHEMASENTRY = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="value",
@@ -1042,6 +1142,7 @@ _GETPROVIDERSCHEMA_RESPONSE_DATASOURCESCHEMASENTRY = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -1062,6 +1163,7 @@ _GETPROVIDERSCHEMA_RESPONSE = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="provider",
@@ -1080,6 +1182,7 @@ _GETPROVIDERSCHEMA_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="resource_schemas",
@@ -1098,6 +1201,7 @@ _GETPROVIDERSCHEMA_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="data_source_schemas",
@@ -1116,6 +1220,7 @@ _GETPROVIDERSCHEMA_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="diagnostics",
@@ -1134,6 +1239,7 @@ _GETPROVIDERSCHEMA_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -1157,6 +1263,7 @@ _GETPROVIDERSCHEMA = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[],
     extensions=[],
     nested_types=[_GETPROVIDERSCHEMA_REQUEST, _GETPROVIDERSCHEMA_RESPONSE,],
@@ -1177,6 +1284,7 @@ _PREPAREPROVIDERCONFIG_REQUEST = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="config",
@@ -1195,6 +1303,7 @@ _PREPAREPROVIDERCONFIG_REQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -1215,6 +1324,7 @@ _PREPAREPROVIDERCONFIG_RESPONSE = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="prepared_config",
@@ -1233,6 +1343,7 @@ _PREPAREPROVIDERCONFIG_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="diagnostics",
@@ -1251,6 +1362,7 @@ _PREPAREPROVIDERCONFIG_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -1271,6 +1383,7 @@ _PREPAREPROVIDERCONFIG = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[],
     extensions=[],
     nested_types=[_PREPAREPROVIDERCONFIG_REQUEST, _PREPAREPROVIDERCONFIG_RESPONSE,],
@@ -1291,6 +1404,7 @@ _UPGRADERESOURCESTATE_REQUEST = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="type_name",
@@ -1309,6 +1423,7 @@ _UPGRADERESOURCESTATE_REQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="version",
@@ -1327,6 +1442,7 @@ _UPGRADERESOURCESTATE_REQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="raw_state",
@@ -1345,6 +1461,7 @@ _UPGRADERESOURCESTATE_REQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -1365,6 +1482,7 @@ _UPGRADERESOURCESTATE_RESPONSE = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="upgraded_state",
@@ -1383,6 +1501,7 @@ _UPGRADERESOURCESTATE_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="diagnostics",
@@ -1401,6 +1520,7 @@ _UPGRADERESOURCESTATE_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -1421,6 +1541,7 @@ _UPGRADERESOURCESTATE = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[],
     extensions=[],
     nested_types=[_UPGRADERESOURCESTATE_REQUEST, _UPGRADERESOURCESTATE_RESPONSE,],
@@ -1441,6 +1562,7 @@ _VALIDATERESOURCETYPECONFIG_REQUEST = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="type_name",
@@ -1459,6 +1581,7 @@ _VALIDATERESOURCETYPECONFIG_REQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="config",
@@ -1477,6 +1600,7 @@ _VALIDATERESOURCETYPECONFIG_REQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -1497,6 +1621,7 @@ _VALIDATERESOURCETYPECONFIG_RESPONSE = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="diagnostics",
@@ -1515,6 +1640,7 @@ _VALIDATERESOURCETYPECONFIG_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -1535,6 +1661,7 @@ _VALIDATERESOURCETYPECONFIG = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[],
     extensions=[],
     nested_types=[
@@ -1558,6 +1685,7 @@ _VALIDATEDATASOURCECONFIG_REQUEST = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="type_name",
@@ -1576,6 +1704,7 @@ _VALIDATEDATASOURCECONFIG_REQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="config",
@@ -1594,6 +1723,7 @@ _VALIDATEDATASOURCECONFIG_REQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -1614,6 +1744,7 @@ _VALIDATEDATASOURCECONFIG_RESPONSE = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="diagnostics",
@@ -1632,6 +1763,7 @@ _VALIDATEDATASOURCECONFIG_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -1652,6 +1784,7 @@ _VALIDATEDATASOURCECONFIG = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[],
     extensions=[],
     nested_types=[
@@ -1675,6 +1808,7 @@ _CONFIGURE_REQUEST = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="terraform_version",
@@ -1693,6 +1827,7 @@ _CONFIGURE_REQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="config",
@@ -1711,6 +1846,7 @@ _CONFIGURE_REQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -1731,6 +1867,7 @@ _CONFIGURE_RESPONSE = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="diagnostics",
@@ -1749,6 +1886,7 @@ _CONFIGURE_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -1769,6 +1907,7 @@ _CONFIGURE = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[],
     extensions=[],
     nested_types=[_CONFIGURE_REQUEST, _CONFIGURE_RESPONSE,],
@@ -1789,6 +1928,7 @@ _READRESOURCE_REQUEST = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="type_name",
@@ -1807,6 +1947,7 @@ _READRESOURCE_REQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="current_state",
@@ -1825,6 +1966,7 @@ _READRESOURCE_REQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="private",
@@ -1843,6 +1985,7 @@ _READRESOURCE_REQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -1863,6 +2006,7 @@ _READRESOURCE_RESPONSE = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="new_state",
@@ -1881,6 +2025,7 @@ _READRESOURCE_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="diagnostics",
@@ -1899,6 +2044,7 @@ _READRESOURCE_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="private",
@@ -1917,6 +2063,7 @@ _READRESOURCE_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -1937,6 +2084,7 @@ _READRESOURCE = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[],
     extensions=[],
     nested_types=[_READRESOURCE_REQUEST, _READRESOURCE_RESPONSE,],
@@ -1957,6 +2105,7 @@ _PLANRESOURCECHANGE_REQUEST = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="type_name",
@@ -1975,6 +2124,7 @@ _PLANRESOURCECHANGE_REQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="prior_state",
@@ -1993,6 +2143,7 @@ _PLANRESOURCECHANGE_REQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="proposed_new_state",
@@ -2011,6 +2162,7 @@ _PLANRESOURCECHANGE_REQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="config",
@@ -2029,6 +2181,7 @@ _PLANRESOURCECHANGE_REQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="prior_private",
@@ -2047,6 +2200,7 @@ _PLANRESOURCECHANGE_REQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -2067,6 +2221,7 @@ _PLANRESOURCECHANGE_RESPONSE = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="planned_state",
@@ -2085,6 +2240,7 @@ _PLANRESOURCECHANGE_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="requires_replace",
@@ -2103,6 +2259,7 @@ _PLANRESOURCECHANGE_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="planned_private",
@@ -2121,6 +2278,7 @@ _PLANRESOURCECHANGE_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="diagnostics",
@@ -2139,6 +2297,7 @@ _PLANRESOURCECHANGE_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="legacy_type_system",
@@ -2157,6 +2316,7 @@ _PLANRESOURCECHANGE_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -2177,6 +2337,7 @@ _PLANRESOURCECHANGE = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[],
     extensions=[],
     nested_types=[_PLANRESOURCECHANGE_REQUEST, _PLANRESOURCECHANGE_RESPONSE,],
@@ -2197,6 +2358,7 @@ _APPLYRESOURCECHANGE_REQUEST = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="type_name",
@@ -2215,6 +2377,7 @@ _APPLYRESOURCECHANGE_REQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="prior_state",
@@ -2233,6 +2396,7 @@ _APPLYRESOURCECHANGE_REQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="planned_state",
@@ -2251,6 +2415,7 @@ _APPLYRESOURCECHANGE_REQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="config",
@@ -2269,6 +2434,7 @@ _APPLYRESOURCECHANGE_REQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="planned_private",
@@ -2287,6 +2453,7 @@ _APPLYRESOURCECHANGE_REQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -2307,6 +2474,7 @@ _APPLYRESOURCECHANGE_RESPONSE = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="new_state",
@@ -2325,6 +2493,7 @@ _APPLYRESOURCECHANGE_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="private",
@@ -2343,6 +2512,7 @@ _APPLYRESOURCECHANGE_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="diagnostics",
@@ -2361,6 +2531,7 @@ _APPLYRESOURCECHANGE_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="legacy_type_system",
@@ -2379,6 +2550,7 @@ _APPLYRESOURCECHANGE_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -2399,6 +2571,7 @@ _APPLYRESOURCECHANGE = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[],
     extensions=[],
     nested_types=[_APPLYRESOURCECHANGE_REQUEST, _APPLYRESOURCECHANGE_RESPONSE,],
@@ -2419,6 +2592,7 @@ _IMPORTRESOURCESTATE_REQUEST = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="type_name",
@@ -2437,6 +2611,7 @@ _IMPORTRESOURCESTATE_REQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="id",
@@ -2455,6 +2630,7 @@ _IMPORTRESOURCESTATE_REQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -2475,6 +2651,7 @@ _IMPORTRESOURCESTATE_IMPORTEDRESOURCE = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="type_name",
@@ -2493,6 +2670,7 @@ _IMPORTRESOURCESTATE_IMPORTEDRESOURCE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="state",
@@ -2511,6 +2689,7 @@ _IMPORTRESOURCESTATE_IMPORTEDRESOURCE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="private",
@@ -2529,6 +2708,7 @@ _IMPORTRESOURCESTATE_IMPORTEDRESOURCE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -2549,6 +2729,7 @@ _IMPORTRESOURCESTATE_RESPONSE = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="imported_resources",
@@ -2567,6 +2748,7 @@ _IMPORTRESOURCESTATE_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="diagnostics",
@@ -2585,6 +2767,7 @@ _IMPORTRESOURCESTATE_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -2605,6 +2788,7 @@ _IMPORTRESOURCESTATE = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[],
     extensions=[],
     nested_types=[
@@ -2629,6 +2813,7 @@ _READDATASOURCE_REQUEST = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="type_name",
@@ -2647,6 +2832,7 @@ _READDATASOURCE_REQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="config",
@@ -2665,6 +2851,7 @@ _READDATASOURCE_REQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -2685,6 +2872,7 @@ _READDATASOURCE_RESPONSE = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="state",
@@ -2703,6 +2891,7 @@ _READDATASOURCE_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="diagnostics",
@@ -2721,6 +2910,7 @@ _READDATASOURCE_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -2741,6 +2931,7 @@ _READDATASOURCE = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[],
     extensions=[],
     nested_types=[_READDATASOURCE_REQUEST, _READDATASOURCE_RESPONSE,],
@@ -2761,6 +2952,7 @@ _GETPROVISIONERSCHEMA_REQUEST = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[],
     extensions=[],
     nested_types=[],
@@ -2780,6 +2972,7 @@ _GETPROVISIONERSCHEMA_RESPONSE = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="provisioner",
@@ -2798,6 +2991,7 @@ _GETPROVISIONERSCHEMA_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="diagnostics",
@@ -2816,6 +3010,7 @@ _GETPROVISIONERSCHEMA_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -2836,6 +3031,7 @@ _GETPROVISIONERSCHEMA = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[],
     extensions=[],
     nested_types=[_GETPROVISIONERSCHEMA_REQUEST, _GETPROVISIONERSCHEMA_RESPONSE,],
@@ -2856,6 +3052,7 @@ _VALIDATEPROVISIONERCONFIG_REQUEST = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="config",
@@ -2874,6 +3071,7 @@ _VALIDATEPROVISIONERCONFIG_REQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -2894,6 +3092,7 @@ _VALIDATEPROVISIONERCONFIG_RESPONSE = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="diagnostics",
@@ -2912,6 +3111,7 @@ _VALIDATEPROVISIONERCONFIG_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -2932,6 +3132,7 @@ _VALIDATEPROVISIONERCONFIG = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[],
     extensions=[],
     nested_types=[
@@ -2955,6 +3156,7 @@ _PROVISIONRESOURCE_REQUEST = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="config",
@@ -2973,6 +3175,7 @@ _PROVISIONRESOURCE_REQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="connection",
@@ -2991,6 +3194,7 @@ _PROVISIONRESOURCE_REQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -3011,6 +3215,7 @@ _PROVISIONRESOURCE_RESPONSE = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="output",
@@ -3029,6 +3234,7 @@ _PROVISIONRESOURCE_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.FieldDescriptor(
             name="diagnostics",
@@ -3047,6 +3253,7 @@ _PROVISIONRESOURCE_RESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -3067,6 +3274,7 @@ _PROVISIONRESOURCE = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[],
     extensions=[],
     nested_types=[_PROVISIONRESOURCE_REQUEST, _PROVISIONRESOURCE_RESPONSE,],
@@ -3867,6 +4075,7 @@ _PROVIDER = _descriptor.ServiceDescriptor(
     file=DESCRIPTOR,
     index=0,
     serialized_options=None,
+    create_key=_descriptor._internal_create_key,
     serialized_start=4490,
     serialized_end=5665,
     methods=[
@@ -3878,6 +4087,7 @@ _PROVIDER = _descriptor.ServiceDescriptor(
             input_type=_GETPROVIDERSCHEMA_REQUEST,
             output_type=_GETPROVIDERSCHEMA_RESPONSE,
             serialized_options=None,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.MethodDescriptor(
             name="PrepareProviderConfig",
@@ -3887,6 +4097,7 @@ _PROVIDER = _descriptor.ServiceDescriptor(
             input_type=_PREPAREPROVIDERCONFIG_REQUEST,
             output_type=_PREPAREPROVIDERCONFIG_RESPONSE,
             serialized_options=None,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.MethodDescriptor(
             name="ValidateResourceTypeConfig",
@@ -3896,6 +4107,7 @@ _PROVIDER = _descriptor.ServiceDescriptor(
             input_type=_VALIDATERESOURCETYPECONFIG_REQUEST,
             output_type=_VALIDATERESOURCETYPECONFIG_RESPONSE,
             serialized_options=None,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.MethodDescriptor(
             name="ValidateDataSourceConfig",
@@ -3905,6 +4117,7 @@ _PROVIDER = _descriptor.ServiceDescriptor(
             input_type=_VALIDATEDATASOURCECONFIG_REQUEST,
             output_type=_VALIDATEDATASOURCECONFIG_RESPONSE,
             serialized_options=None,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.MethodDescriptor(
             name="UpgradeResourceState",
@@ -3914,6 +4127,7 @@ _PROVIDER = _descriptor.ServiceDescriptor(
             input_type=_UPGRADERESOURCESTATE_REQUEST,
             output_type=_UPGRADERESOURCESTATE_RESPONSE,
             serialized_options=None,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.MethodDescriptor(
             name="Configure",
@@ -3923,6 +4137,7 @@ _PROVIDER = _descriptor.ServiceDescriptor(
             input_type=_CONFIGURE_REQUEST,
             output_type=_CONFIGURE_RESPONSE,
             serialized_options=None,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.MethodDescriptor(
             name="ReadResource",
@@ -3932,6 +4147,7 @@ _PROVIDER = _descriptor.ServiceDescriptor(
             input_type=_READRESOURCE_REQUEST,
             output_type=_READRESOURCE_RESPONSE,
             serialized_options=None,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.MethodDescriptor(
             name="PlanResourceChange",
@@ -3941,6 +4157,7 @@ _PROVIDER = _descriptor.ServiceDescriptor(
             input_type=_PLANRESOURCECHANGE_REQUEST,
             output_type=_PLANRESOURCECHANGE_RESPONSE,
             serialized_options=None,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.MethodDescriptor(
             name="ApplyResourceChange",
@@ -3950,6 +4167,7 @@ _PROVIDER = _descriptor.ServiceDescriptor(
             input_type=_APPLYRESOURCECHANGE_REQUEST,
             output_type=_APPLYRESOURCECHANGE_RESPONSE,
             serialized_options=None,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.MethodDescriptor(
             name="ImportResourceState",
@@ -3959,6 +4177,7 @@ _PROVIDER = _descriptor.ServiceDescriptor(
             input_type=_IMPORTRESOURCESTATE_REQUEST,
             output_type=_IMPORTRESOURCESTATE_RESPONSE,
             serialized_options=None,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.MethodDescriptor(
             name="ReadDataSource",
@@ -3968,6 +4187,7 @@ _PROVIDER = _descriptor.ServiceDescriptor(
             input_type=_READDATASOURCE_REQUEST,
             output_type=_READDATASOURCE_RESPONSE,
             serialized_options=None,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.MethodDescriptor(
             name="Stop",
@@ -3977,6 +4197,7 @@ _PROVIDER = _descriptor.ServiceDescriptor(
             input_type=_STOP_REQUEST,
             output_type=_STOP_RESPONSE,
             serialized_options=None,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
 )
@@ -3991,6 +4212,7 @@ _PROVISIONER = _descriptor.ServiceDescriptor(
     file=DESCRIPTOR,
     index=1,
     serialized_options=None,
+    create_key=_descriptor._internal_create_key,
     serialized_start=5668,
     serialized_end=6058,
     methods=[
@@ -4002,6 +4224,7 @@ _PROVISIONER = _descriptor.ServiceDescriptor(
             input_type=_GETPROVISIONERSCHEMA_REQUEST,
             output_type=_GETPROVISIONERSCHEMA_RESPONSE,
             serialized_options=None,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.MethodDescriptor(
             name="ValidateProvisionerConfig",
@@ -4011,6 +4234,7 @@ _PROVISIONER = _descriptor.ServiceDescriptor(
             input_type=_VALIDATEPROVISIONERCONFIG_REQUEST,
             output_type=_VALIDATEPROVISIONERCONFIG_RESPONSE,
             serialized_options=None,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.MethodDescriptor(
             name="ProvisionResource",
@@ -4020,6 +4244,7 @@ _PROVISIONER = _descriptor.ServiceDescriptor(
             input_type=_PROVISIONRESOURCE_REQUEST,
             output_type=_PROVISIONRESOURCE_RESPONSE,
             serialized_options=None,
+            create_key=_descriptor._internal_create_key,
         ),
         _descriptor.MethodDescriptor(
             name="Stop",
@@ -4029,6 +4254,7 @@ _PROVISIONER = _descriptor.ServiceDescriptor(
             input_type=_STOP_REQUEST,
             output_type=_STOP_RESPONSE,
             serialized_options=None,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
 )
