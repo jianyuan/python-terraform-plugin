@@ -14,6 +14,7 @@ from grpclib.utils import graceful_exit
 
 from terraform import diagnostics, schemas, settings, unknowns, utils
 from terraform.grpc_controller import GRPCController
+from terraform.grpc_stdio import GRPCStdio
 from terraform.protos import tfplugin5_1_grpc, tfplugin5_1_pb2
 
 logger = logging.getLogger(__name__)
@@ -283,6 +284,7 @@ async def run_server(*, provider: schemas.Provider):
 
         handlers = [
             GRPCController(shutdown_event=shutdown_event),
+            GRPCStdio(),
             ProviderService(provider=provider, shutdown_event=shutdown_event),
         ]
         server = grpclib.server.Server(handlers)

@@ -10,7 +10,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
-grpclib = "^0.3.2"
+grpclib = {version = "^0.3.3-rc.1", allow-prereleases = true}
 protobuf = "^3.12.2"
 cryptography = "^2.9.2"
 marshmallow = "^3.6.1"
