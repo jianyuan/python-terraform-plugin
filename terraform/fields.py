@@ -69,21 +69,25 @@ class BaseNestedField(BaseField):
 
 class Bool(marshmallow.fields.Boolean, BaseField):
     primitive = True
+    python_type = bool
     terraform_type = "bool"
 
 
 class Int(marshmallow.fields.Integer, BaseField):
     primitive = True
+    python_type = int
     terraform_type = "number"
 
 
 class Float(marshmallow.fields.Float, BaseField):
     primitive = True
+    python_type = float
     terraform_type = "number"
 
 
 class String(marshmallow.fields.String, BaseField):
     primitive = True
+    python_type = str
     terraform_type = "string"
 
 

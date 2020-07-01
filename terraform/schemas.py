@@ -119,11 +119,11 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
         return {key: value for key, value in data.items() if value is not None}
 
     def get_by_path(
-        self, path: typing.Sequence[str]
+        self, path: typing.Optional[typing.Sequence[str]]
     ) -> typing.List[typing.Union["Schema", fields.BaseField]]:
         current = self
 
-        if len(path) == 0:
+        if not path:
             return [current]
 
         result = []
@@ -277,6 +277,9 @@ class ResourceData(typing.MutableMapping):
 
     def __iter__(self):
         return iter(self.config)
+
+    def get(self, key: str) -> typing.Any:
+        ...
 
     def set_id(self, value: str) -> None:
         self[settings.ID_KEY] = value

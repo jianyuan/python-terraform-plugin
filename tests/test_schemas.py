@@ -3,7 +3,7 @@ import typing
 
 import pytest
 
-from terraform import fields, schemas
+from terraform import diffs, fields, schemas
 from terraform.protos import tfplugin5_1_pb2
 
 
@@ -532,3 +532,33 @@ def test_get_by_path(
 )
 def test_block_to_proto(subject: schemas.Block, want: tfplugin5_1_pb2.Schema.Block):
     assert subject.to_proto() == want
+
+
+@pytest.mark.xfail
+@pytest.mark.parametrize(
+    "schema,state,diff,key,value",
+    [
+        (
+            schemas.Schema.from_dict(
+                {
+                    "availability_zone": fields.String(
+                        optional=True, computed=True, force_new=True
+                    )
+                }
+            ),
+            None,
+            diffs.InstanceDiff(
+                attributes={
+                    "availability_zone": diffs.AttributeDiff(
+                        old="foo", new="bar", new_computed=True
+                    )
+                }
+            ),
+            "availability_zone",
+            "",
+        )
+    ],
+)
+def test_resource_data_get(schema, state, diff, key, value):
+    resource_data = schemas.ResourceData(schema=schema, state=state, diff=diff)
+    assert resource_data.get(key) == value
