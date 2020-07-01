@@ -1,6 +1,6 @@
 import pytest
 
-from terraform import datastructures, diffs, fields, schemas
+from terraform import diffs, field_readers, fields, schemas
 
 
 class FieldReaderSchema_Nested(schemas.Schema):
@@ -34,75 +34,75 @@ class FieldReaderSchema(schemas.Schema):
     [
         (
             ["boolNOPE"],
-            datastructures.FieldReadResult(value=None, exists=False, computed=False),
+            field_readers.FieldReadResult(value=None, exists=False, computed=False),
         ),
         (
             ["bool"],
-            datastructures.FieldReadResult(value=True, exists=True, computed=False),
+            field_readers.FieldReadResult(value=True, exists=True, computed=False),
         ),
         (
             ["float"],
-            datastructures.FieldReadResult(value=3.1415, exists=True, computed=False),
+            field_readers.FieldReadResult(value=3.1415, exists=True, computed=False),
         ),
         (
             ["int"],
-            datastructures.FieldReadResult(value=42, exists=True, computed=False),
+            field_readers.FieldReadResult(value=42, exists=True, computed=False),
         ),
         (
             ["string"],
-            datastructures.FieldReadResult(value="string", exists=True, computed=False),
+            field_readers.FieldReadResult(value="string", exists=True, computed=False),
         ),
         (
             ["list"],
-            datastructures.FieldReadResult(
+            field_readers.FieldReadResult(
                 value=["foo", "bar"], exists=True, computed=False
             ),
         ),
         (
             ["list_int"],
-            datastructures.FieldReadResult(value=[21, 42], exists=True, computed=False),
+            field_readers.FieldReadResult(value=[21, 42], exists=True, computed=False),
         ),
         (
             ["map"],
-            datastructures.FieldReadResult(
+            field_readers.FieldReadResult(
                 value={"foo": "bar", "bar": "baz"}, exists=True, computed=False
             ),
         ),
         (
             ["map_int"],
-            datastructures.FieldReadResult(
+            field_readers.FieldReadResult(
                 value={"one": 1, "two": 2}, exists=True, computed=False
             ),
         ),
         (
             ["map_int_nested_schema"],
-            datastructures.FieldReadResult(
+            field_readers.FieldReadResult(
                 value={"one": 1, "two": 2}, exists=True, computed=False
             ),
         ),
         (
             ["map_float"],
-            datastructures.FieldReadResult(
+            field_readers.FieldReadResult(
                 value={"one_dot_two": 1.2}, exists=True, computed=False
             ),
         ),
         (
             ["map_bool"],
-            datastructures.FieldReadResult(
+            field_readers.FieldReadResult(
                 value={"True": True, "False": False}, exists=True, computed=False
             ),
         ),
         (
             ["map", "foo"],
-            datastructures.FieldReadResult(value="bar", exists=True, computed=False),
+            field_readers.FieldReadResult(value="bar", exists=True, computed=False),
         ),
         (
             ["set"],
-            datastructures.FieldReadResult(value=[10, 50], exists=True, computed=False),
+            field_readers.FieldReadResult(value=[10, 50], exists=True, computed=False),
         ),
         (
             ["set_deep"],
-            datastructures.FieldReadResult(
+            field_readers.FieldReadResult(
                 value=[{"index": 10, "value": "foo"}, {"index": 50, "value": "bar"}],
                 exists=True,
                 computed=False,
@@ -110,12 +110,12 @@ class FieldReaderSchema(schemas.Schema):
         ),
         # (
         #     ["set_empty"],
-        #     datastructures.FieldReadResult(value=[], exists=False, computed=False),
+        #     field_readers.FieldReadResult(value=[], exists=False, computed=False),
         # ),
     ],
 )
 def test_diff_field_reader(path, expected):
-    reader = datastructures.DiffFieldReader(
+    reader = field_readers.DiffFieldReader(
         diff=diffs.InstanceDiff(
             attributes={
                 "bool": diffs.AttributeDiff(old=None, new=True),
@@ -154,7 +154,7 @@ def test_diff_field_reader(path, expected):
                 "set_deep.50.value": diffs.AttributeDiff(old=None, new="bar"),
             }
         ),
-        source=datastructures.DictFieldReader(
+        source=field_readers.DictFieldReader(
             {"list_map": [{"foo": "bar", "bar": "baz"}, {"baz": "baz"}]}
         ),
         schema=FieldReaderSchema(),
