@@ -4,6 +4,7 @@ import marshmallow
 
 
 class BaseField(marshmallow.fields.Field):
+    primitive: bool = False
     terraform_type: typing.Optional[str] = None
 
     def __init__(
@@ -67,18 +68,22 @@ class BaseNestedField(BaseField):
 
 
 class Bool(marshmallow.fields.Boolean, BaseField):
+    primitive = True
     terraform_type = "bool"
 
 
 class Int(marshmallow.fields.Integer, BaseField):
+    primitive = True
     terraform_type = "number"
 
 
 class Float(marshmallow.fields.Float, BaseField):
+    primitive = True
     terraform_type = "number"
 
 
 class String(marshmallow.fields.String, BaseField):
+    primitive = True
     terraform_type = "string"
 
 
