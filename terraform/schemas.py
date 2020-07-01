@@ -7,7 +7,7 @@ import typing
 
 import marshmallow
 
-from terraform import fields, settings
+from terraform import diffs, fields, settings
 from terraform.protos import tfplugin5_1_pb2
 
 
@@ -118,6 +118,55 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
     def none_missing(self, data, **kwargs):
         return {key: value for key, value in data.items() if value is not None}
 
+    def get_by_path(
+        self, path: typing.Sequence[str]
+    ) -> typing.List[typing.Union["Schema", fields.BaseField]]:
+        current = self
+
+        if len(path) == 0:
+            return [current]
+
+        result = []
+
+        path = path.copy()[::-1]
+
+        while path:
+            part = path.pop()
+
+            if isinstance(current, fields.BaseField) and current.primitive:
+                if path:
+                    return None
+
+            elif isinstance(current, Schema):
+                try:
+                    current = current.declared_fields[part]
+                except KeyError:
+                    return None
+
+            elif isinstance(current, fields.List):
+                is_index = len(path) > 0 and path[0] == "#"
+
+                current = current.get_inner()
+                if isinstance(current, fields.Nested):
+                    current = current.schema
+
+                if is_index:
+                    part = path.pop()
+                    try:
+                        int(part)
+                    except ValueError:
+                        return None
+
+            elif isinstance(current, fields.Map):
+                current = current.get_inner()
+
+            else:
+                raise NotImplementedError
+
+            result.append(current)
+
+        return result
+
     def to_proto(self) -> tfplugin5_1_pb2.Schema:
         return tfplugin5_1_pb2.Schema(
             version=self.schema_version, block=self.to_block().to_proto(),
@@ -206,22 +255,28 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
 
 @dataclasses.dataclass
 class ResourceData(typing.MutableMapping):
-    data: typing.Dict[str, typing.Any] = dataclasses.field(default_factory=dict)
+    schema: Schema
+    config: typing.Dict[str, typing.Any] = dataclasses.field(default_factory=dict)
+    state: typing.Optional[diffs.InstanceState] = None
+    diff: typing.Optional[diffs.InstanceDiff] = None
+    meta: typing.Dict[str, typing.Any] = dataclasses.field(default_factory=dict)
+    timeouts = ...
+    provider_meta = ...
 
     def __getitem__(self, key: str) -> typing.Any:
-        return self.data[key]
+        return self.config[key]
 
     def __setitem__(self, key: str, value: typing.Any) -> None:
-        self.data[key] = value
+        self.config[key] = value
 
     def __delitem__(self, key: str) -> None:
-        del self.data[key]
+        del self.config[key]
 
     def __len__(self) -> int:
-        return len(self.data)
+        return len(self.config)
 
     def __iter__(self):
-        return iter(self.data)
+        return iter(self.config)
 
     def set_id(self, value: str) -> None:
         self[settings.ID_KEY] = value

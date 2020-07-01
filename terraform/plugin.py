@@ -10,6 +10,7 @@ import tempfile
 import typing
 
 import grpclib.server
+import msgpack
 from grpclib.utils import graceful_exit
 
 from terraform import diagnostics, schemas, settings, unknowns, utils
@@ -116,7 +117,24 @@ class ProviderService(tfplugin5_1_grpc.ProviderBase):
         await stream.send_message(response)
 
     async def ReadResource(self, stream: grpclib.server.Stream) -> None:
-        pass
+        request = await stream.recv_message()
+
+        response = tfplugin5_1_pb2.ReadResource.Response()
+        response.private = request.private
+
+        resource = self.provider.resources[request.type_name]
+        current_state = utils.from_dynamic_value_proto(request.current_state)
+        private = json.loads(request.private)
+
+        # TODO: private
+
+        data = schemas.ResourceData(config=current_state)
+
+        await resource.read(data=data)
+
+        response.new_state.msgpack = msgpack.packb(data.data)
+
+        await stream.send_message(response)
 
     async def PlanResourceChange(self, stream: grpclib.server.Stream) -> None:
         request = await stream.recv_message()
@@ -173,7 +191,7 @@ class ProviderService(tfplugin5_1_grpc.ProviderBase):
             private = planned_private
         else:
             # TODO: implement me
-            data = schemas.ResourceData(planned_state)
+            data = schemas.ResourceData(config=planned_state)
 
             if create:
                 await resource.create(data=data)
@@ -197,7 +215,7 @@ class ProviderService(tfplugin5_1_grpc.ProviderBase):
 
         resource = self.provider.data_sources[request.type_name]
         config = utils.from_dynamic_value_proto(request.config)
-        data = schemas.ResourceData(config)
+        data = schemas.ResourceData(config=config)
 
         await resource.read(data=data)
 

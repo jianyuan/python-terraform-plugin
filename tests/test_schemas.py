@@ -1,3 +1,6 @@
+import itertools
+import typing
+
 import pytest
 
 from terraform import fields, schemas
@@ -264,6 +267,133 @@ ID_ATTRIBUTE = schemas.Attribute(type="string", optional=True, computed=True)
 )
 def test_schema(subject: schemas.Schema, want: schemas.Block):
     assert subject.to_block() == want
+
+
+@pytest.mark.parametrize(
+    "subject,path,want",
+    [
+        pytest.param(
+            schemas.Schema.from_dict({"list": fields.List(fields.Int())})(),
+            [],
+            [schemas.Schema],
+            id="full object",
+        ),
+        pytest.param(
+            schemas.Schema.from_dict({"list": fields.List(fields.Int())})(),
+            ["list"],
+            [fields.List],
+            id="list",
+        ),
+        pytest.param(
+            schemas.Schema.from_dict({"list": fields.List(fields.Int())})(),
+            ["list", "#"],
+            [fields.List, fields.Int],
+            id="list.#",
+        ),
+        pytest.param(
+            schemas.Schema.from_dict({"list": fields.List(fields.Int())})(),
+            ["list", "0"],
+            [fields.List, fields.Int],
+            id="list.0",
+        ),
+        pytest.param(
+            schemas.Schema.from_dict(
+                {
+                    "list": fields.List(
+                        fields.Nested(
+                            schemas.Schema.from_dict({"field": fields.String()})
+                        )
+                    )
+                }
+            )(),
+            ["list", "0"],
+            [fields.List, schemas.Schema],
+            id="list.0 with resource",
+        ),
+        pytest.param(
+            schemas.Schema.from_dict(
+                {
+                    "list": fields.List(
+                        fields.Nested(
+                            schemas.Schema.from_dict({"field": fields.String()})
+                        )
+                    )
+                }
+            )(),
+            ["list", "0", "field"],
+            [fields.List, schemas.Schema, fields.String],
+            id="list.0.field",
+        ),
+        pytest.param(
+            schemas.Schema.from_dict({"set": fields.Set(fields.Int())})(),
+            ["set"],
+            [fields.Set],
+            id="set",
+        ),
+        pytest.param(
+            schemas.Schema.from_dict({"set": fields.Set(fields.Int())})(),
+            ["set", "#"],
+            [fields.Set, fields.Int],
+            id="set.#",
+        ),
+        pytest.param(
+            schemas.Schema.from_dict({"set": fields.Set(fields.Int())})(),
+            ["set", "0"],
+            [fields.Set, fields.Int],
+            id="set.0",
+        ),
+        pytest.param(
+            schemas.Schema.from_dict(
+                {
+                    "set": fields.Set(
+                        fields.Nested(
+                            schemas.Schema.from_dict({"field": fields.String()})
+                        )
+                    )
+                }
+            )(),
+            ["set", "0"],
+            [fields.Set, schemas.Schema],
+            id="set.0 with resource",
+        ),
+        pytest.param(
+            schemas.Schema.from_dict({"map": fields.Map()})(),
+            ["map", "foo"],
+            [fields.Map, fields.String],
+            id="map_elem",
+        ),
+        pytest.param(
+            schemas.Schema.from_dict(
+                {
+                    "set": fields.Set(
+                        fields.Nested(
+                            schemas.Schema.from_dict(
+                                {"index": fields.Int(), "value": fields.String()}
+                            )
+                        )
+                    )
+                }
+            )(),
+            ["set", "50", "index"],
+            [fields.Set, schemas.Schema, fields.Int],
+            id="set_deep",
+        ),
+    ],
+)
+def test_get_by_path(
+    subject: schemas.Schema,
+    path: typing.Sequence[str],
+    want: typing.Optional[typing.Sequence[str]],
+):
+    result = subject.get_by_path(path)
+
+    if want is None:
+        assert result is None
+    else:
+        assert result is not None
+
+        for expected_class, actual_instance in itertools.zip_longest(want, result):
+            assert isinstance(actual_instance, expected_class)
 
 
 @pytest.mark.parametrize(
