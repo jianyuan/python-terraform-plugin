@@ -2,6 +2,9 @@ import typing
 
 import marshmallow
 
+# Missing or unknown value
+missing = marshmallow.utils.missing
+
 
 class BaseField(marshmallow.fields.Field):
     primitive: bool = False
