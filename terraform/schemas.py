@@ -144,18 +144,12 @@ class Schema(marshmallow.Schema, metaclass=SchemaMeta):
                     return None
 
             elif isinstance(current, fields.List):
-                is_index = len(path) > 0 and path[0] == "#"
-
-                current = current.get_inner()
-                if isinstance(current, fields.Nested):
-                    current = current.schema
-
-                if is_index:
-                    part = path.pop()
-                    try:
-                        int(part)
-                    except ValueError:
-                        return None
+                if part == "#":
+                    current = fields.Int()
+                else:
+                    current = current.get_inner()
+                    if isinstance(current, fields.Nested):
+                        current = current.schema
 
             elif isinstance(current, fields.Map):
                 current = current.get_inner()

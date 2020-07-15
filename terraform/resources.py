@@ -20,14 +20,16 @@ class ResourceConfig(typing.MutableMapping):
             if current is None:
                 raise KeyError
 
-            if isinstance(current, typing.Mapping):
+            if isinstance(current, typing.Dict):
                 try:
                     current = current[part]
                 except KeyError:
                     if i > 0 and i != len(parts) - 1:
                         try_key = ".".join(parts[i:])
                         return current[try_key]
-            elif isinstance(current, typing.Sequence):
+                    raise
+
+            elif isinstance(current, typing.List):
                 if part == "#":
                     if any(v == fields.missing for v in current):
                         return fields.missing
@@ -37,8 +39,10 @@ class ResourceConfig(typing.MutableMapping):
                     if part < 0 or part >= len(current):
                         raise KeyError
                     current = current[part]
+
             elif isinstance(current, str):
                 raise NotImplementedError
+
             else:
                 raise NotImplementedError
 
@@ -55,3 +59,19 @@ class ResourceConfig(typing.MutableMapping):
 
     def __iter__(self):
         return iter(self.config)
+
+    def is_computed(self, key: str) -> bool:
+        return has_missing(self.get(key))
+
+
+def has_missing(obj: typing.Any) -> bool:
+    stack = [obj]
+    while stack:
+        item = stack.pop()
+        if item == fields.missing:
+            return True
+        elif isinstance(item, typing.Dict):
+            stack.extend(item.values())
+        elif isinstance(item, typing.List):
+            stack.extend(item)
+    return False

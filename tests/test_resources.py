@@ -76,3 +76,21 @@ def test_resource_config_get(config, schema, key, value):
             assert resource_config[key] is None
     else:
         assert resource_config[key] == value
+
+
+@pytest.mark.parametrize(
+    "input,result",
+    [
+        pytest.param(42, False, id="primitive"),
+        pytest.param(fields.missing, True, id="primitive computed"),
+        pytest.param(["foo", fields.missing], True, id="list"),
+        pytest.param(["foo", [fields.missing]], True, id="nested list"),
+        pytest.param({"foo": 1, "bar": 2}, False, id="map"),
+        pytest.param({"foo": 1, "bar": fields.missing}, True, id="map computed"),
+        pytest.param(
+            {"foo": 1, "bar": [2, fields.missing]}, True, id="map list computed"
+        ),
+    ],
+)
+def test_has_missing(input, result):
+    assert resources.has_missing(input) == result

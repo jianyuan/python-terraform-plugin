@@ -2,7 +2,7 @@ import abc
 import dataclasses
 import typing
 
-from terraform import diffs, fields, schemas
+from terraform import diffs, fields, resources, schemas
 
 
 @dataclasses.dataclass
@@ -17,6 +17,91 @@ class BaseFieldReader(abc.ABC):
     @abc.abstractmethod
     def get(self, path: typing.Sequence[typing.Any]) -> FieldReadResult:
         ...
+
+
+@dataclasses.dataclass
+class ConfigFieldReader(BaseFieldReader):
+    config: resources.ResourceConfig
+    schema: schemas.Schema
+
+    def get(self, path: typing.Sequence[typing.Any]) -> FieldReadResult:
+        key = ".".join(path)
+        schema_list = self.schema.get_by_path(path)
+        if not schema_list:
+            return FieldReadResult()
+
+        schema = schema_list[-1]
+
+        if isinstance(schema, fields.BaseField) and schema.primitive:
+            try:
+                value = self.config[key]
+            except KeyError:
+                return FieldReadResult()
+
+            computed = False  # determine computed
+            return FieldReadResult(value=value, exists=True, computed=computed)
+
+        elif isinstance(schema, fields.List):
+            count_result = self.get(path + ["#"])
+            if not count_result.exists:
+                count_result.value = 0
+
+            if count_result.computed or count_result.value == 0:
+                return FieldReadResult(
+                    value=[], exists=count_result.exists, computed=count_result.computed
+                )
+
+            result = []
+            for i in range(count_result.value):
+                item_result = self.get(path + [str(i)])
+                result.append(item_result.value)
+
+            return FieldReadResult(value=result, exists=True)
+
+        elif isinstance(schema, fields.Map):
+            # TODO: check both the raw value and the interpolated
+            result = {}
+            computed = False
+
+            value = self.config.get(key)
+
+            if isinstance(value, str):
+                raise NotImplementedError
+
+            elif isinstance(value, typing.Sequence):
+                raise NotImplementedError
+
+            elif isinstance(value, typing.Mapping):
+                for this_key_part in value:
+                    this_key = f"{key}.{this_key_part}"
+
+                    if self.config.is_computed(key):
+                        computed = True
+                        break
+
+                    result[this_key_part] = self.config.get(this_key)
+            else:
+                raise NotImplementedError
+
+            return FieldReadResult(
+                value=None if computed else result, exists=True, computed=computed
+            )
+
+        elif isinstance(schema, schemas.Schema):
+            result = {}
+            result_exists = False
+
+            for field in schema.declared_fields:
+                raw_value = self.get(path + [field])
+                if raw_value.exists:
+                    result_exists = True
+
+                result[field] = raw_value.value
+
+            return FieldReadResult(value=result, exists=result_exists)
+
+        else:
+            raise NotImplementedError
 
 
 @dataclasses.dataclass
@@ -88,9 +173,9 @@ class DiffFieldReader(BaseFieldReader):
             result_exists = len(result) > 0 or prefix + "#" in self.diff.attributes
 
             if not result_exists:
-                result = self.source.get(path)
-                if result.exists:
-                    return result
+                source_result = self.source.get(path)
+                if source_result.exists:
+                    return source_result
 
             return FieldReadResult(value=result, exists=result_exists)
 
@@ -155,85 +240,3 @@ class DiffFieldReader(BaseFieldReader):
 
         else:
             raise NotImplementedError
-
-    # def get2(self, path: typing.Sequence[typing.Any]) -> FieldReadResult:
-    #     schema_or_field = self.schema
-    #     diff = self.diff.attributes
-    #     source = self.source.get(path)
-
-    #     for part in path:
-    #         if isinstance(schema_or_field, schemas.Schema):
-    #             schema_or_field = schema_or_field.declared_fields.get(part)
-    #             if schema_or_field is None:
-    #                 diff = None
-    #                 break
-
-    #             elif isinstance(schema_or_field, fields.BaseField):
-    #                 if schema_or_field.primitive:
-    #                     diff = diff.get(schema_or_field.name)
-    #                 elif isinstance(schema_or_field, fields.List):
-    #                     diff = diff.get(schema_or_field.name)
-    #                 elif isinstance(schema_or_field, fields.Map):
-    #                     diff = diff.get(schema_or_field.name)
-    #                 else:
-    #                     raise NotImplementedError
-
-    #             else:
-    #                 raise NotImplementedError
-
-    #         else:
-    #             raise NotImplementedError
-
-    #     if diff is None:
-    #         return FieldReadResult()
-
-    #     elif schema_or_field.primitive:
-    #         return FieldReadResult(
-    #             value=diff.new, exists=True, computed=diff.new_computed
-    #         )
-
-    #     elif isinstance(schema_or_field, fields.List):
-    #         schema_diff = diff.get(diffs.SCHEMA)
-    #         if schema_diff is None or schema_diff.new_computed or schema_diff.new == 0:
-    #             return FieldReadResult(
-    #                 result=[], exists=True, computed=schema_diff.new_computed
-    #             )
-
-    #         result = []
-
-    #         if isinstance(schema_or_field, fields.Set):
-    #             for k, v in diff.items():
-    #                 if k == diffs.SCHEMA:
-    #                     continue
-    #                 result.append(v.new)
-    #         else:
-    #             for i in range(schema_diff.new):
-    #                 if i in diff:
-    #                     result.append(diff[i].new)
-    #                 else:
-    #                     result.append(None)
-
-    #         return FieldReadResult(value=result, exists=True)
-
-    #     elif isinstance(schema_or_field, fields.Map):
-    #         if source.exists:
-    #             result = source.value.copy()
-    #             exists = True
-    #         else:
-    #             result = {}
-    #             exists = False
-
-    #         for k, v in diff.items():
-    #             exists = True
-
-    #             if v.new_removed:
-    #                 if k in result:
-    #                     del result[k]
-    #                 continue
-
-    #             result[k] = v.new
-
-    #         return FieldReadResult(value=result, exists=exists)
-
-    #     else:
-    #         raise NotImplementedError

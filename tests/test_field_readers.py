@@ -1,6 +1,6 @@
 import pytest
 
-from terraform import diffs, field_readers, fields, schemas
+from terraform import diffs, field_readers, fields, resources, schemas
 
 
 class FieldReaderSchema_Nested(schemas.Schema):
@@ -108,55 +108,83 @@ class FieldReaderSchema(schemas.Schema):
                 computed=False,
             ),
         ),
-        # (
-        #     ["set_empty"],
-        #     field_readers.FieldReadResult(value=[], exists=False, computed=False),
-        # ),
+        (
+            ["set_empty"],
+            field_readers.FieldReadResult(value=[], exists=False, computed=False),
+        ),
     ],
 )
-def test_diff_field_reader(path, expected):
-    reader = field_readers.DiffFieldReader(
-        diff=diffs.InstanceDiff(
-            attributes={
-                "bool": diffs.AttributeDiff(old=None, new=True),
-                "int": diffs.AttributeDiff(old=None, new=42),
-                "float": diffs.AttributeDiff(old=None, new=3.1415),
-                "string": diffs.AttributeDiff(old=None, new="string"),
-                "string_computed": diffs.AttributeDiff(
-                    old="foo", new="bar", new_computed=True
-                ),
-                "list.#": diffs.AttributeDiff(old=0, new=2),
-                "list.0": diffs.AttributeDiff(old=None, new="foo"),
-                "list.1": diffs.AttributeDiff(old=None, new="bar"),
-                "list_int.#": diffs.AttributeDiff(old=0, new=2),
-                "list_int.0": diffs.AttributeDiff(old=None, new=21),
-                "list_int.1": diffs.AttributeDiff(old=None, new=42),
-                "map.foo": diffs.AttributeDiff(old=None, new="bar"),
-                "map.bar": diffs.AttributeDiff(old=None, new="baz"),
-                "map_int.%": diffs.AttributeDiff(old=None, new=2),
-                "map_int.one": diffs.AttributeDiff(old=None, new=1),
-                "map_int.two": diffs.AttributeDiff(old=None, new=2),
-                "map_int_nested_schema.%": diffs.AttributeDiff(old=None, new=2),
-                "map_int_nested_schema.one": diffs.AttributeDiff(old=None, new=1),
-                "map_int_nested_schema.two": diffs.AttributeDiff(old=None, new=2),
-                "map_float.%": diffs.AttributeDiff(old=None, new=1),
-                "map_float.one_dot_two": diffs.AttributeDiff(old=None, new=1.2),
-                "map_bool.%": diffs.AttributeDiff(old=None, new=2),
-                "map_bool.True": diffs.AttributeDiff(old=None, new=True),
-                "map_bool.False": diffs.AttributeDiff(old=None, new=False),
-                "set.#": diffs.AttributeDiff(old=0, new=2),
-                "set.10": diffs.AttributeDiff(old=None, new=10),
-                "set.50": diffs.AttributeDiff(old=None, new=50),
-                "set_deep.#": diffs.AttributeDiff(old=0, new=2),
-                "set_deep.10.index": diffs.AttributeDiff(old=None, new=10),
-                "set_deep.10.value": diffs.AttributeDiff(old=None, new="foo"),
-                "set_deep.50.index": diffs.AttributeDiff(old=None, new=50),
-                "set_deep.50.value": diffs.AttributeDiff(old=None, new="bar"),
-            }
-        ),
-        source=field_readers.DictFieldReader(
-            {"list_map": [{"foo": "bar", "bar": "baz"}, {"baz": "baz"}]}
-        ),
-        schema=FieldReaderSchema(),
-    )
-    assert reader.get(path) == expected
+class TestFieldReader:
+    def test_config_field_reader(self, path, expected):
+        reader = field_readers.ConfigFieldReader(
+            config=resources.ResourceConfig(
+                schema=FieldReaderSchema(),
+                config={
+                    "bool": True,
+                    "float": 3.1415,
+                    "int": 42,
+                    "string": "string",
+                    "list": ["foo", "bar"],
+                    "list_int": [21, 42],
+                    "map": {"foo": "bar", "bar": "baz"},
+                    "map_int": {"one": 1, "two": 2},
+                    "map_int_nested_schema": {"one": 1, "two": 2},
+                    "map_float": {"one_dot_two": 1.2},
+                    "map_bool": {"True": True, "False": False},
+                    "set": [10, 50],
+                    "set_deep": [
+                        {"index": 10, "value": "foo"},
+                        {"index": 50, "value": "bar"},
+                    ],
+                },
+            ),
+            schema=FieldReaderSchema(),
+        )
+        assert reader.get(path) == expected
+
+    def test_diff_field_reader(self, path, expected):
+        reader = field_readers.DiffFieldReader(
+            diff=diffs.InstanceDiff(
+                attributes={
+                    "bool": diffs.AttributeDiff(old=None, new=True),
+                    "int": diffs.AttributeDiff(old=None, new=42),
+                    "float": diffs.AttributeDiff(old=None, new=3.1415),
+                    "string": diffs.AttributeDiff(old=None, new="string"),
+                    "string_computed": diffs.AttributeDiff(
+                        old="foo", new="bar", new_computed=True
+                    ),
+                    "list.#": diffs.AttributeDiff(old=0, new=2),
+                    "list.0": diffs.AttributeDiff(old=None, new="foo"),
+                    "list.1": diffs.AttributeDiff(old=None, new="bar"),
+                    "list_int.#": diffs.AttributeDiff(old=0, new=2),
+                    "list_int.0": diffs.AttributeDiff(old=None, new=21),
+                    "list_int.1": diffs.AttributeDiff(old=None, new=42),
+                    "map.foo": diffs.AttributeDiff(old=None, new="bar"),
+                    "map.bar": diffs.AttributeDiff(old=None, new="baz"),
+                    "map_int.%": diffs.AttributeDiff(old=None, new=2),
+                    "map_int.one": diffs.AttributeDiff(old=None, new=1),
+                    "map_int.two": diffs.AttributeDiff(old=None, new=2),
+                    "map_int_nested_schema.%": diffs.AttributeDiff(old=None, new=2),
+                    "map_int_nested_schema.one": diffs.AttributeDiff(old=None, new=1),
+                    "map_int_nested_schema.two": diffs.AttributeDiff(old=None, new=2),
+                    "map_float.%": diffs.AttributeDiff(old=None, new=1),
+                    "map_float.one_dot_two": diffs.AttributeDiff(old=None, new=1.2),
+                    "map_bool.%": diffs.AttributeDiff(old=None, new=2),
+                    "map_bool.True": diffs.AttributeDiff(old=None, new=True),
+                    "map_bool.False": diffs.AttributeDiff(old=None, new=False),
+                    "set.#": diffs.AttributeDiff(old=0, new=2),
+                    "set.10": diffs.AttributeDiff(old=None, new=10),
+                    "set.50": diffs.AttributeDiff(old=None, new=50),
+                    "set_deep.#": diffs.AttributeDiff(old=0, new=2),
+                    "set_deep.10.index": diffs.AttributeDiff(old=None, new=10),
+                    "set_deep.10.value": diffs.AttributeDiff(old=None, new="foo"),
+                    "set_deep.50.index": diffs.AttributeDiff(old=None, new=50),
+                    "set_deep.50.value": diffs.AttributeDiff(old=None, new="bar"),
+                }
+            ),
+            source=field_readers.DictFieldReader(
+                {"list_map": [{"foo": "bar", "bar": "baz"}, {"baz": "baz"}]}
+            ),
+            schema=FieldReaderSchema(),
+        )
+        assert reader.get(path) == expected
